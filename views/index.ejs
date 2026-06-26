@@ -1,5 +1,14 @@
 <%- include('partials/header') %>
 
+<!-- AJOUT ÉTAPE 8.5 : alerte succès si ?message=envoyé -->
+<% if (locals.message && message === 'envoyé') { %>
+<div class="alert alert-success alert-dismissible d-flex align-items-center gap-2 rounded-0 mb-0" role="alert">
+    <i class="fa fa-circle-check"></i>
+    <span>Votre message a bien été envoyé ! Nous vous répondrons sous 24h.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+</div>
+<% } %>
+
 <!-- CARROUSEL HERO (full-width via breakout) -->
 <div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;">
     <div id="mainCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">

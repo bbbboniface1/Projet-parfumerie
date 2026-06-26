@@ -36,7 +36,8 @@ router.get('/', async (req, res) => {
         res.render('index', {
             title: 'Accueil',
             produits, searchTerm: search, categorie,
-            page, totalPages
+            page, totalPages,
+            message: req.query.message || '' // AJOUT ÉTAPE 8.5
         });
     } catch (err) {
         req.log.error(err, 'Erreur GET /');

@@ -23,7 +23,7 @@ const upload = multer({
     }
 });
 
-// GET /admin
+// GET /admin — AJOUT ÉTAPE 4 : stats dashboard
 router.get('/', async (req, res) => {
     const connection = await pool.getConnection();
     try {
@@ -32,7 +32,30 @@ router.get('/', async (req, res) => {
         const [messages] = await connection.execute('SELECT * FROM messages ORDER BY date_creation DESC');
         const commandesAvecDetails = commandes.map(c => ({ ...c, articlesList: JSON.parse(c.articles) }));
         let activeTab = req.query.tab === 'products' ? 'products' : req.query.tab === 'messages' ? 'messages' : 'orders';
-        res.render('admin', { title: 'Administration', commandes: commandesAvecDetails, produits, messages, activeTab });
+
+        // AJOUT ÉTAPE 4 : requêtes statistiques
+        const [[caRow]] = await connection.execute(
+            "SELECT COALESCE(SUM(total), 0) AS chiffre_affaires FROM commandes"
+        );
+        const [[cmdRow]] = await connection.execute(
+            "SELECT COUNT(*) AS total, SUM(CASE WHEN statut = 'En attente' THEN 1 ELSE 0 END) AS en_attente FROM commandes"
+        );
+        const [[prodRow]] = await connection.execute(
+            "SELECT COUNT(*) AS total FROM produits"
+        );
+        const [bsRows] = await connection.execute(
+            "SELECT p.nom FROM produits p JOIN commandes c ON JSON_CONTAINS(c.articles, JSON_OBJECT('id', p.id)) GROUP BY p.id ORDER BY COUNT(*) DESC LIMIT 1"
+        );
+
+        const stats = {
+            chiffreAffaires: Number(caRow.chiffre_affaires),
+            totalCommandes: cmdRow.total,
+            commandesEnAttente: Number(cmdRow.en_attente) || 0,
+            totalProduits: prodRow.total,
+            bestSeller: bsRows[0] ? bsRows[0].nom : 'N/A'
+        };
+
+        res.render('admin', { title: 'Administration', commandes: commandesAvecDetails, produits, messages, activeTab, stats });
     } catch (err) {
         console.error('Erreur GET /admin :', err);
         res.status(500).render('errors/500', { title: 'Erreur serveur' });

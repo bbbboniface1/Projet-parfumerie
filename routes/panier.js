@@ -20,7 +20,8 @@ router.post('/ajouter/:id', async (req, res) => {
             req.session.cart.push({ id: produit.id, nom: produit.nom, prix: produit.prix, image: produit.image, qty: 1 });
         }
         req.session.toast = { type: 'success', msg: `"${produit.nom}" ajouté au panier !` };
-        res.redirect('/produit/' + req.params.id);
+        // AJOUT ÉTAPE 8.1 : rediriger vers la page précédente
+        res.redirect(req.headers.referer || '/');
     } catch (err) {
         console.error('Erreur POST /panier/ajouter :', err);
         res.send('Erreur ajout panier');

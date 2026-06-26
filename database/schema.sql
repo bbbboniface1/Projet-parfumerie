@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `produits` (
 CREATE TABLE IF NOT EXISTS `commandes` (
     `id`            INT            NOT NULL AUTO_INCREMENT,
     `nom`           VARCHAR(100)   NOT NULL,
+    `email`         VARCHAR(255)   DEFAULT NULL COMMENT 'Optionnel — suivi commande client',
     `telephone`     VARCHAR(20)    NOT NULL,
     `adresse`       TEXT           NOT NULL,
     `ville`         VARCHAR(100)   NOT NULL,
@@ -36,10 +37,13 @@ CREATE TABLE IF NOT EXISTS `commandes` (
     `total`         DECIMAL(10,2)  NOT NULL,
     `articles`      TEXT,
     `paiement`      VARCHAR(50)    DEFAULT 'A la livraison',
-    `statut`        VARCHAR(20)    DEFAULT 'En attente',
+    `statut`        VARCHAR(20)    DEFAULT 'En attente' COMMENT 'En attente, Expédiée, Livrée',
     `date_creation` DATETIME       DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Migration sur base existante : ajout colonne email si absente
+-- ALTER TABLE commandes ADD COLUMN IF NOT EXISTS email VARCHAR(255) DEFAULT NULL AFTER nom;
 
 CREATE TABLE IF NOT EXISTS `messages` (
     `id`            INT          NOT NULL AUTO_INCREMENT,
