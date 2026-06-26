@@ -28,8 +28,8 @@ router.get('/', async (req, res) => {
         const totalPages = Math.ceil(total / PER_PAGE);
 
         const [produits] = await connection.execute(
-            `SELECT * FROM produits ${where} ORDER BY nom ASC LIMIT ? OFFSET ?`,
-            [...params, PER_PAGE, offset]
+            `SELECT * FROM produits ${where} ORDER BY nom ASC LIMIT ${PER_PAGE} OFFSET ${offset}`,
+            params
         );
 
         res.render('index', {

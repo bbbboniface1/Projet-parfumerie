@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `commandes` (
     `total`         DECIMAL(10,2)  NOT NULL,
     `articles`      TEXT,
     `paiement`      VARCHAR(50)    DEFAULT 'A la livraison',
+    `statut`        VARCHAR(20)    DEFAULT 'En attente',
     `date_creation` DATETIME       DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `commandes` (
   `articles` text COLLATE utf8mb4_general_ci,
   `date_creation` datetime DEFAULT CURRENT_TIMESTAMP,
   `paiement` varchar(50) COLLATE utf8mb4_general_ci DEFAULT 'A la livraison',
-   varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'En attente',
+  `statut` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'En attente',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
