@@ -3,9 +3,12 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const helmet = require('helmet');
+const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const pinoHttp = require('pino-http');
 const path = require('path');
 
+const logger = require('./lib/logger');
 const publicRouter = require('./routes/public');
 const panierRouter = require('./routes/panier');
 const adminRouter = require('./routes/admin');
@@ -17,6 +20,8 @@ const port = process.env.PORT || 5000;
 const isProd = process.env.NODE_ENV === 'production';
 
 app.use(helmet({ contentSecurityPolicy: false }));
+app.use(compression());
+app.use(pinoHttp({ logger, autoLogging: { ignore: req => req.url === '/favicon.ico' } }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -39,7 +44,7 @@ app.use((req, res, next) => {
     res.locals.cartCount = cartCount;
     res.locals.toast = req.session.toast || null;
     if (req.session.toast) delete req.session.toast;
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    if (!isProd) res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
 
@@ -70,7 +75,7 @@ app.post('/admin/login', loginLimiter, async (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
-        if (err) console.error('Erreur destroy session :', err);
+        if (err) logger.error(err, 'Erreur destroy session');
         res.clearCookie('connect.sid');
         res.redirect('/login');
     });
@@ -84,5 +89,5 @@ app.use(notFound);
 app.use(serverError);
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Serveur lance sur le port ${port}`);
+    logger.info(`Serveur lance sur le port ${port} [${process.env.NODE_ENV || 'development'}]`);
 });

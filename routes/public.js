@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const pool = require('../db');
+const { sendOrderConfirmation, sendContactNotification } = require('../lib/mailer');
 
 const PER_PAGE = 12;
 
@@ -38,7 +39,7 @@ router.get('/', async (req, res) => {
             page, totalPages
         });
     } catch (err) {
-        console.error('Erreur GET / :', err);
+        req.log.error(err, 'Erreur GET /');
         res.status(500).render('errors/500', { title: 'Erreur serveur' });
     } finally {
         connection.release();
@@ -50,11 +51,11 @@ router.get('/produit/:id', async (req, res) => {
     const connection = await pool.getConnection();
     try {
         const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
-        const [autres] = await connection.execute('SELECT * FROM produits WHERE id != ? LIMIT 4', [req.params.id]);
+        const [autres] = await connection.execute('SELECT * FROM produits WHERE id != ? ORDER BY RAND() LIMIT 4', [req.params.id]);
         if (!produits.length) return res.status(404).render('errors/404', { title: 'Page introuvable' });
         res.render('produit', { title: produits[0].nom, produit: produits[0], autres });
     } catch (err) {
-        console.error('Erreur GET /produit/:id :', err);
+        req.log.error(err, 'Erreur GET /produit/:id');
         res.status(500).render('errors/500', { title: 'Erreur serveur' });
     } finally {
         connection.release();
@@ -89,9 +90,12 @@ router.post('/contact', [
             'INSERT INTO messages (nom, email, sujet, contenu) VALUES (?, ?, ?, ?)',
             [nom, email, sujet, contenu]
         );
+        sendContactNotification({ nom, email, sujet, contenu }).catch(err =>
+            req.log.warn(err, 'Email notification contact échoué')
+        );
         res.redirect('/contact?message=envoyé');
     } catch (err) {
-        console.error('Erreur POST /contact :', err);
+        req.log.error(err, 'Erreur POST /contact');
         res.status(500).render('errors/500', { title: 'Erreur serveur' });
     } finally {
         connection.release();
@@ -105,7 +109,7 @@ router.get('/commande', (req, res) => {
     res.render('commande', { title: 'Commander', cart: req.session.cart, totalAmount, errors: [] });
 });
 
-// POST /commande — transaction + stock guard
+// POST /commande — transaction + stock guard + email confirmation
 router.post('/commande', [
     body('nom').trim().notEmpty().withMessage('Le nom est requis.'),
     body('telephone').trim().notEmpty().withMessage('Le téléphone est requis.'),
@@ -120,7 +124,7 @@ router.post('/commande', [
     }
     const connection = await pool.getConnection();
     try {
-        const { nom, telephone, adresse, ville, codepostal, paiement } = req.body;
+        const { nom, telephone, email, adresse, ville, codepostal, paiement } = req.body;
         const cart = req.session.cart;
         if (!cart || !cart.length) return res.redirect('/panier');
         const total = cart.reduce((s, i) => s + i.prix * i.qty, 0);
@@ -134,19 +138,27 @@ router.post('/commande', [
             );
             if (!r.affectedRows) {
                 await connection.rollback();
-                return res.send(`Stock insuffisant pour "${item.nom}". Commande annulée.`);
+                req.session.toast = { type: 'danger', msg: `Stock insuffisant pour "${item.nom}". Commande annulée.` };
+                return res.redirect('/panier');
             }
         }
-        await connection.execute(
+        const [result] = await connection.execute(
             'INSERT INTO commandes (nom, telephone, adresse, ville, codepostal, total, articles, paiement) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [nom, telephone, adresse, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
         );
         await connection.commit();
+
+        sendOrderConfirmation({
+            nom,
+            email: email || null,
+            commande: { id: result.insertId, articles: cart, total, paiement: paiement || 'A la livraison' }
+        }).catch(err => req.log.warn(err, 'Email confirmation commande échoué'));
+
         req.session.cart = null;
         res.redirect('/merci');
     } catch (err) {
         await connection.rollback();
-        console.error('Erreur POST /commande :', err);
+        req.log.error(err, 'Erreur POST /commande');
         res.status(500).render('errors/500', { title: 'Erreur serveur' });
     } finally {
         connection.release();
