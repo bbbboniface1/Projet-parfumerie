@@ -114,6 +114,7 @@
                                         <button class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
+                                        <% if (cmd.email) { %><p><strong>Email :</strong> <%= cmd.email %></p><% } %>
                                         <p><strong>Adresse :</strong> <%= cmd.adresse %>, <%= cmd.codepostal %> <%= cmd.ville %></p>
                                         <p><strong>Paiement :</strong> <%= cmd.paiement %></p>
                                         <p><strong>Date :</strong> <%= new Date(cmd.date_creation).toLocaleString('fr-FR') %></p>

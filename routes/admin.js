@@ -30,7 +30,11 @@ router.get('/', async (req, res) => {
         const [commandes] = await connection.execute('SELECT * FROM commandes ORDER BY date_creation DESC');
         const [produits] = await connection.execute('SELECT * FROM produits ORDER BY nom ASC');
         const [messages] = await connection.execute('SELECT * FROM messages ORDER BY date_creation DESC');
-        const commandesAvecDetails = commandes.map(c => ({ ...c, articlesList: JSON.parse(c.articles) }));
+        const commandesAvecDetails = commandes.map(c => {
+            let articlesList = [];
+            try { articlesList = JSON.parse(c.articles); } catch (e) { articlesList = []; }
+            return { ...c, articlesList };
+        });
         let activeTab = req.query.tab === 'products' ? 'products' : req.query.tab === 'messages' ? 'messages' : 'orders';
 
         // AJOUT ÉTAPE 4 : requêtes statistiques

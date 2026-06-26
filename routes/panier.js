@@ -24,7 +24,7 @@ router.post('/ajouter/:id', async (req, res) => {
         res.redirect(req.headers.referer || '/');
     } catch (err) {
         console.error('Erreur POST /panier/ajouter :', err);
-        res.send('Erreur ajout panier');
+        res.status(500).render('errors/500', { title: 'Erreur serveur' });
     } finally {
         connection.release();
     }
