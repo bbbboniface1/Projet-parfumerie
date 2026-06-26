@@ -19,6 +19,11 @@ const app = express();
 const port = process.env.PORT || 5000;
 const isProd = process.env.NODE_ENV === 'production';
 
+const WHATSAPP_NUMBER = '22390732894';
+const SHOP_URL = process.env.SHOP_URL || 'http://localhost:3000';
+app.locals.WHATSAPP_NUMBER = WHATSAPP_NUMBER;
+app.locals.SHOP_URL = SHOP_URL;
+
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
 app.use(pinoHttp({ logger, autoLogging: { ignore: req => req.url === '/favicon.ico' } }));

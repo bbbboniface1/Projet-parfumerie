@@ -2,9 +2,40 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+const WHATSAPP_NUMBER = '22390732894';
+const SHOP_URL = process.env.SHOP_URL || 'http://localhost:3000';
+
 // GET /panier
 router.get('/', (req, res) => {
-    res.render('panier', { title: 'Mon Panier', cart: req.session.cart });
+    const cart = req.session.cart || [];
+    let cartLines = [];
+    let totalGeneral = 0;
+    cart.forEach(item => {
+        const sousTotal = item.prix * item.qty;
+        totalGeneral += sousTotal;
+        const productUrl = `${SHOP_URL}/produit/${item.id}`;
+        cartLines.push(
+            `\u2022 *${item.nom}* x${item.qty}`,
+            `  Prix unitaire : ${Number(item.prix).toLocaleString('fr-FR')} FCFA`,
+            `  Sous-total : ${Number(sousTotal).toLocaleString('fr-FR')} FCFA`,
+            `  Lien : ${productUrl}`
+        );
+    });
+    const whatsappCartMessage = [
+        `Bonjour Sirani Parfumerie !`,
+        ``,
+        `Je souhaite commander les articles suivants :`,
+        ``,
+        ...cartLines,
+        ``,
+        `*TOTAL : ${Number(totalGeneral).toLocaleString('fr-FR')} FCFA*`,
+        ``,
+        `Merci de confirmer et de m'indiquer les modalités de livraison.`
+    ].join('\n');
+    const whatsappCartUrl = cart.length > 0
+        ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappCartMessage)}`
+        : '#';
+    res.render('panier', { title: 'Mon Panier', cart: req.session.cart, whatsappCartUrl });
 });
 
 // POST /panier/ajouter/:id

@@ -5,6 +5,8 @@ const pool = require('../db');
 const { sendOrderConfirmation, sendContactNotification } = require('../lib/mailer');
 
 const PER_PAGE = 12;
+const WHATSAPP_NUMBER = '22390732894';
+const SHOP_URL = process.env.SHOP_URL || 'http://localhost:3000';
 
 // GET / — accueil avec filtres catégorie + pagination
 router.get('/', async (req, res) => {
@@ -54,7 +56,22 @@ router.get('/produit/:id', async (req, res) => {
         const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
         const [autres] = await connection.execute('SELECT * FROM produits WHERE id != ? ORDER BY RAND() LIMIT 4', [req.params.id]);
         if (!produits.length) return res.status(404).render('errors/404', { title: 'Page introuvable' });
-        res.render('produit', { title: produits[0].nom, produit: produits[0], autres });
+        const produit = produits[0];
+        const productUrl = `${SHOP_URL}/produit/${produit.id}`;
+        const whatsappMessage = [
+            `Bonjour Sirani Parfumerie !`,
+            ``,
+            `Je souhaite commander le produit suivant :`,
+            ``,
+            `*${produit.nom}*`,
+            `Prix : ${Number(produit.prix).toLocaleString('fr-FR')} FCFA`,
+            ``,
+            `Voir le produit : ${productUrl}`,
+            ``,
+            `Merci de confirmer la disponibilité.`
+        ].join('\n');
+        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
+        res.render('produit', { title: produit.nom, produit, autres, whatsappUrl });
     } catch (err) {
         req.log.error(err, 'Erreur GET /produit/:id');
         res.status(500).render('errors/500', { title: 'Erreur serveur' });

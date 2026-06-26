@@ -60,6 +60,14 @@
                     <i class="fa fa-bag-shopping me-2"></i> Ajouter au panier
                 </button>
             </form>
+            <a href="<%= whatsappUrl %>"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn btn-success btn-lg rounded-0 px-5 d-flex align-items-center justify-content-center gap-2 mb-3"
+               style="background-color:#25D366;border-color:#25D366;">
+                <i class="fab fa-whatsapp fs-5"></i>
+                Commander via WhatsApp
+            </a>
             <% } else { %>
             <button class="btn-add-cart" disabled style="opacity:0.5;cursor:not-allowed;">Épuisé</button>
             <% } %>
@@ -79,9 +87,7 @@
         <div class="container">
             <div class="text-center mb-4">
                 <h3 class="font-serif" style="font-weight:300;letter-spacing:2px;">Vous aimerez aussi</h3>
-                <div class="section-ornament mx-auto" style="max-width:160px;">
-                    <span class="section-ornament-diamond">◆</span>
-                </div>
+                <div class="section-ornament mx-auto" style="max-width:160px;"></div>
             </div>
             <div class="row g-3">
                 <% autres.forEach(function(p) { %>

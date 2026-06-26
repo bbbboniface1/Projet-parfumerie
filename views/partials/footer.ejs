@@ -1,56 +1,153 @@
 </div><!-- fin container principal -->
 
+<style>
+.footer-sirani {
+    background: #0a0a0a;
+    color: #aaa;
+    border-top: 2px solid rgba(212,175,55,0.4);
+    padding: 60px 0 0;
+    margin-top: 80px;
+}
+.footer-col-title {
+    color: #fff;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+.footer-brand-name {
+    font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    color: #d4af37;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 10px;
+}
+.footer-tagline {
+    font-style: italic;
+    font-size: 0.82rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+.footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #444;
+    border-radius: 50%;
+    color: #aaa;
+    margin-right: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+.footer-social a:hover {
+    color: #d4af37;
+    border-color: #d4af37;
+}
+.footer-nav a {
+    display: block;
+    color: #aaa;
+    text-decoration: none;
+    padding: 5px 0;
+    font-size: 0.88rem;
+    transition: color 0.3s ease;
+}
+.footer-nav a:hover {
+    color: #d4af37;
+}
+.footer-contact p {
+    font-size: 0.88rem;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+.footer-contact a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.footer-contact a:hover {
+    color: #d4af37;
+}
+.footer-copyright {
+    border-top: 1px solid #222;
+    margin-top: 40px;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.78rem;
+    color: #555;
+}
+</style>
+
 <!-- FOOTER -->
-<footer class="footer-sirani mt-5">
+<footer class="footer-sirani">
     <div class="container">
         <div class="row g-5">
 
-            <!-- Colonne 1 : Brand -->
-            <div class="col-lg-3 col-md-6">
-                <span class="footer-brand">◆ Sirani</span>
-                <p class="footer-desc">
-                    L'excellence olfactive depuis 2023. Des parfums d'exception, créés à Bamako avec passion et savoir-faire.
-                </p>
+            <!-- Colonne 1 : Identité -->
+            <div class="col-lg-4 col-md-6">
+                <span class="footer-brand-name">Sirani Parfumerie</span>
+                <p class="footer-tagline">L'excellence olfactive depuis 2023</p>
+                <hr style="border-color:#222;width:40px;margin:0 0 20px 0;">
                 <div class="footer-social">
-                    <a href="#" class="footer-social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="footer-social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="footer-social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://wa.me/22390732894" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
             <!-- Colonne 2 : Navigation -->
-            <div class="col-lg-2 col-md-6">
-                <p class="footer-heading">Navigation</p>
-                <a href="/" class="footer-link">Accueil</a>
-                <a href="/" class="footer-link">Collection</a>
-                <a href="/atelier" class="footer-link">Atelier</a>
-                <a href="/contact" class="footer-link">Contact</a>
+            <div class="col-lg-3 col-md-6">
+                <p class="footer-col-title">Boutique</p>
+                <nav class="footer-nav">
+                    <a href="/">Accueil</a>
+                    <a href="/?categorie=">Notre Collection</a>
+                    <a href="/?categorie=1">Parfums Femme</a>
+                    <a href="/?categorie=2">Parfums Homme</a>
+                    <a href="/?categorie=3">Unisex</a>
+                    <a href="/atelier">Notre Atelier</a>
+                    <a href="/contact">Nous contacter</a>
+                    <a href="/mes-commandes">Mes commandes</a>
+                </nav>
             </div>
 
-            <!-- Colonne 3 : Informations -->
-            <div class="col-lg-2 col-md-6">
-                <p class="footer-heading">Informations</p>
-                <a href="#" class="footer-link">Livraison</a>
-                <a href="#" class="footer-link">Retours</a>
-                <a href="#" class="footer-link">Mentions légales</a>
-                <a href="#" class="footer-link">FAQ</a>
-            </div>
-
-            <!-- Colonne 4 : Newsletter -->
-            <div class="col-lg-5 col-md-6">
-                <p class="footer-heading">Newsletter</p>
-                <p style="font-size:0.85rem;margin-bottom:16px;">Recevez nos nouvelles créations et offres exclusives.</p>
-                <input type="email" class="footer-newsletter-input" placeholder="Votre adresse email">
-                <button class="footer-newsletter-btn">S'abonner</button>
+            <!-- Colonne 3 : Contact & Adresse -->
+            <div class="col-lg-5 col-md-12">
+                <p class="footer-col-title">Nous trouver</p>
+                <div class="footer-contact">
+                    <p>
+                        <i class="fas fa-map-marker-alt me-2" style="color:#d4af37;"></i>
+                        Yamacoro, vers la station Baraka<br>
+                        <span style="padding-left:22px;">À 200 mètres du marché</span><br>
+                        <span style="padding-left:22px;">Bamako, Mali</span>
+                    </p>
+                    <p>
+                        <i class="fab fa-whatsapp me-2" style="color:#25D366;"></i>
+                        <a href="https://wa.me/22390732894" target="_blank">+223 90 73 28 94</a><br>
+                        <small style="padding-left:22px;font-size:0.75rem;color:#555;">Commander sur WhatsApp</small>
+                    </p>
+                    <p>
+                        <i class="fas fa-clock me-2" style="color:#d4af37;"></i>
+                        Lun – Sam : 9h00 – 20h00<br>
+                        <span style="padding-left:22px;">Dimanche : sur rendez-vous</span>
+                    </p>
+                    <a href="https://wa.me/22390732894?text=Bonjour%20Sirani%20Parfumerie%20!%20Je%20souhaite%20passer%20une%20commande."
+                       target="_blank"
+                       class="btn btn-sm mt-3 rounded-0"
+                       style="background:#25D366;color:white;border:none;font-size:0.8rem;letter-spacing:1px;">
+                        <i class="fab fa-whatsapp me-1"></i> Commander sur WhatsApp
+                    </a>
+                </div>
             </div>
 
         </div>
 
-        <hr class="footer-divider">
-
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-            <p class="footer-copy mb-0">&copy; 2026 Sirani Parfumerie. Tous droits réservés.</p>
-            <p class="footer-copy mb-0">Fait avec ❤️ à Bamako</p>
+        <div class="footer-copyright">
+            &copy; 2025 Sirani Parfumerie — Bamako, Mali. Tous droits réservés.
         </div>
     </div>
 </footer>

@@ -5,9 +5,7 @@
     <!-- Formulaire -->
     <div class="col-lg-7">
         <h1 class="font-serif mb-1" style="font-weight:300;font-size:2.5rem;letter-spacing:2px;">Nous contacter</h1>
-        <div class="section-ornament mb-4" style="justify-content:flex-start;max-width:160px;">
-            <span class="section-ornament-diamond">◆</span>
-        </div>
+        <div class="section-ornament mb-4" style="justify-content:flex-start;max-width:160px;"></div>
 
         <% if (locals.success && success) { %>
         <div class="alert rounded-0 mb-4 d-flex align-items-center gap-3" style="background:#f0faf5;border-left:3px solid #27ae60;color:#1a5c34;">
@@ -63,23 +61,17 @@
                 <i class="fa fa-location-dot contact-info-icon"></i>
                 <div>
                     <p class="contact-info-label">Adresse</p>
-                    <p class="contact-info-text">Kalabanbougou, Bamako<br>République du Mali</p>
+                    <p class="contact-info-text">Yamacoro, vers la station Baraka<br>À 200 mètres du marché — Bamako, Mali</p>
                 </div>
             </div>
 
             <div class="contact-info-item">
-                <i class="fa fa-phone contact-info-icon"></i>
+                <i class="fab fa-whatsapp contact-info-icon" style="color:#25D366;"></i>
                 <div>
-                    <p class="contact-info-label">Téléphone</p>
-                    <p class="contact-info-text">+223 90 85 93 97</p>
-                </div>
-            </div>
-
-            <div class="contact-info-item">
-                <i class="fa fa-envelope contact-info-icon"></i>
-                <div>
-                    <p class="contact-info-label">Email</p>
-                    <p class="contact-info-text">contact@sirani-parfumerie.com</p>
+                    <p class="contact-info-label">WhatsApp</p>
+                    <p class="contact-info-text">
+                        <a href="https://wa.me/22390732894" target="_blank" style="color:inherit;text-decoration:none;">+223 90 73 28 94</a>
+                    </p>
                 </div>
             </div>
 
@@ -87,14 +79,29 @@
                 <i class="fa fa-clock contact-info-icon"></i>
                 <div>
                     <p class="contact-info-label">Horaires</p>
-                    <p class="contact-info-text">Lun – Sam : 9h00 – 19h00<br>Dimanche : 11h00 – 17h00</p>
+                    <p class="contact-info-text">Lun – Sam : 9h00 – 20h00<br>Dimanche : sur rendez-vous</p>
                 </div>
             </div>
 
-            <div class="social-links">
+            <div class="mt-4 p-3 rounded" style="background:#f0fdf4;border-left:3px solid #25D366;">
+                <p class="mb-1 fw-bold">Commandez directement sur WhatsApp</p>
+                <p class="small text-muted mb-2">Réponse rapide — 7j/7</p>
+                <a href="https://wa.me/22390732894?text=Bonjour%20Sirani%20Parfumerie%20!%20Je%20souhaite%20passer%20une%20commande."
+                   target="_blank"
+                   class="btn btn-sm rounded-0"
+                   style="background-color:#25D366;color:white;border:none;">
+                    <i class="fab fa-whatsapp me-1"></i> 90 73 28 94
+                </a>
+                <p class="small text-muted mt-2 mb-0">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    Yamacoro, vers la station Baraka, à 200 mètres du marché — Bamako
+                </p>
+            </div>
+
+            <div class="social-links mt-4">
                 <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                 <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://wa.me/22390732894" target="_blank" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </div>
