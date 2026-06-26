@@ -1,374 +1,87 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const mysql = require('mysql2/promise');
-const path = require('path');
-const multer = require('multer');
 const bcrypt = require('bcrypt');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
+
+const publicRouter = require('./routes/public');
+const panierRouter = require('./routes/panier');
+const adminRouter = require('./routes/admin');
+const requireAdmin = require('./middleware/requireAdmin');
+const { notFound, serverError } = require('./middleware/errorHandler');
 
 const app = express();
 const port = process.env.PORT || 5000;
 const isProd = process.env.NODE_ENV === 'production';
 
-// --- Sécurité HTTP headers (helmet) ---
-app.use(helmet({
-    contentSecurityPolicy: false
-}));
-
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.urlencoded({ extended: true }));
 
-// --- Session sécurisée ---
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: 'strict',
-        maxAge: 6000000
-    }
+    cookie: { httpOnly: true, secure: isProd, sameSite: 'strict', maxAge: 6000000 }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// --- Pool de connexions MySQL ---
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || '127.0.0.1',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'db_parfumerie',
-    socketPath: process.env.DB_SOCKET || undefined,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-// --- Multer (upload images) ---
-const storage = multer.diskStorage({
-    destination: './public/img',
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage });
-
-// --- Rate limiting sur le login admin ---
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
-    message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.',
-    standardHeaders: true,
-    legacyHeaders: false
-});
-
-// --- Middleware global : panier + cache ---
+// Middleware global : panier + toast flash + cache
 app.use((req, res, next) => {
     let cartCount = 0;
     if (req.session.cart) {
-        cartCount = req.session.cart.reduce((total, item) => total + item.qty, 0);
+        cartCount = req.session.cart.reduce((t, i) => t + i.qty, 0);
     }
     res.locals.cartCount = cartCount;
+    res.locals.toast = req.session.toast || null;
+    if (req.session.toast) delete req.session.toast;
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     next();
 });
 
-// ===================
-// ROUTES PUBLIQUES
-// ===================
+// Routes publiques
+app.use('/', publicRouter);
+app.use('/panier', panierRouter);
 
-app.get('/', async (req, res) => {
-    const connection = await pool.getConnection();
-    try {
-        const search = req.query.q || '';
-        let sql = 'SELECT * FROM produits';
-        let params = [];
-        if (search) {
-            sql += ' WHERE nom LIKE ? ORDER BY nom ASC';
-            params = [`%${search}%`];
-        } else {
-            sql += ' ORDER BY nom ASC';
-        }
-        const [produits] = await connection.execute(sql, params);
-        res.render('index', { title: 'Sirani Parfumerie', produits, searchTerm: search });
-    } catch (err) {
-        console.error('Erreur GET / :', err);
-        res.send('Erreur base de données.');
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/produit/:id', async (req, res) => {
-    const connection = await pool.getConnection();
-    try {
-        const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
-        const [autresProduits] = await connection.execute(
-            'SELECT * FROM produits WHERE id != ? LIMIT 4',
-            [req.params.id]
-        );
-        if (produits.length > 0) {
-            res.render('produit', { title: 'Détail - Sirani Parfumerie', produit: produits[0], autres: autresProduits });
-        } else {
-            res.status(404).send('Produit non trouvé');
-        }
-    } catch (err) {
-        console.error('Erreur GET /produit/:id :', err);
-        res.send('Erreur serveur');
-    } finally {
-        connection.release();
-    }
-});
-
-app.post('/panier/ajouter/:id', async (req, res) => {
-    const connection = await pool.getConnection();
-    try {
-        const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
-        const produit = produits[0];
-        if (!produit) { return res.redirect('/'); }
-        if (!req.session.cart) { req.session.cart = []; }
-        const existingProduct = req.session.cart.find(p => p.id === produit.id);
-        if (existingProduct) {
-            existingProduct.qty++;
-        } else {
-            req.session.cart.push({ id: produit.id, nom: produit.nom, prix: produit.prix, image: produit.image, qty: 1 });
-        }
-        res.redirect('/panier');
-    } catch (err) {
-        console.error('Erreur POST /panier/ajouter :', err);
-        res.send('Erreur ajout panier');
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/panier', (req, res) => {
-    res.render('panier', { title: 'Mon Panier - Sirani Parfumerie', cart: req.session.cart });
-});
-
-app.post('/panier/supprimer/:id', (req, res) => {
-    if (req.session.cart) {
-        req.session.cart = req.session.cart.filter(item => item.id != req.params.id);
-    }
-    res.redirect('/panier');
-});
-
-app.get('/commande', (req, res) => {
-    if (!req.session.cart || req.session.cart.length === 0) { return res.redirect('/panier'); }
-    const totalAmount = req.session.cart.reduce((total, item) => total + (item.prix * item.qty), 0);
-    res.render('commande', { title: 'Commande - Sirani Parfumerie', cart: req.session.cart, totalAmount });
-});
-
-// Validation commande — transaction + garde stock négatif
-app.post('/commande', async (req, res) => {
-    const connection = await pool.getConnection();
-    try {
-        const { nom, telephone, adresse, ville, codepostal, paiement } = req.body;
-        const cart = req.session.cart;
-        if (!cart || cart.length === 0) { return res.redirect('/panier'); }
-
-        const total = cart.reduce((sum, item) => sum + (item.prix * item.qty), 0);
-        const articlesJSON = JSON.stringify(cart);
-
-        await connection.beginTransaction();
-
-        for (const item of cart) {
-            const [result] = await connection.execute(
-                'UPDATE produits SET stock = stock - ? WHERE id = ? AND stock >= ?',
-                [item.qty, item.id, item.qty]
-            );
-            if (result.affectedRows === 0) {
-                await connection.rollback();
-                return res.send(`Stock insuffisant pour le produit id=${item.id}. Commande annulée.`);
-            }
-        }
-
-        await connection.execute(
-            'INSERT INTO commandes (nom, telephone, adresse, ville, codepostal, total, articles, paiement) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [nom, telephone, adresse, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
-        );
-
-        await connection.commit();
-        req.session.cart = null;
-        res.redirect('/merci');
-    } catch (err) {
-        await connection.rollback();
-        console.error('Erreur POST /commande :', err);
-        res.send('Erreur validation commande');
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/merci', (req, res) => {
-    res.render('merci', { title: 'Merci - Sirani Parfumerie' });
-});
-
-app.get('/atelier', (req, res) => {
-    res.render('atelier', { title: 'Atelier - Sirani Parfumerie' });
-});
-
-app.get('/contact', (req, res) => {
-    res.render('contact', { title: 'Contact - Sirani Parfumerie' });
-});
-
-app.post('/contact', async (req, res) => {
-    const connection = await pool.getConnection();
-    try {
-        const { nom, email, sujet, contenu } = req.body;
-        await connection.execute(
-            'INSERT INTO messages (nom, email, sujet, contenu) VALUES (?, ?, ?, ?)',
-            [nom, email, sujet, contenu]
-        );
-        res.redirect('/?message=envoyé');
-    } catch (err) {
-        console.error('Erreur POST /contact :', err);
-        res.send("Erreur lors de l'envoi du message.");
-    } finally {
-        connection.release();
-    }
-});
-
-// ===================
-// ROUTES LOGIN / ADMIN
-// ===================
-
+// Auth
 app.get('/login', (req, res) => {
-    res.render('login', { title: 'Connexion - Sirani Parfumerie' });
+    res.render('login', { title: 'Connexion', error: req.query.error === '1' });
 });
 
-// Rate-limited : 5 tentatives / 15 min
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: 'Trop de tentatives. Réessayez dans 15 minutes.',
+    standardHeaders: true, legacyHeaders: false
+});
+
 app.post('/admin/login', loginLimiter, async (req, res) => {
     const { password } = req.body;
     try {
-        const hash = process.env.ADMIN_PASSWORD_HASH;
-        const match = await bcrypt.compare(password, hash);
-        if (match) {
-            req.session.isAdmin = true;
-            res.redirect('/admin');
-        } else {
-            res.redirect('/login?error=1');
-        }
-    } catch (err) {
-        console.error('Erreur login :', err);
-        res.redirect('/login?error=1');
-    }
+        const match = await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH);
+        if (match) { req.session.isAdmin = true; res.redirect('/admin'); }
+        else res.redirect('/login?error=1');
+    } catch { res.redirect('/login?error=1'); }
 });
 
-// Logout sécurisé : destroy session + clear cookie
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
-        if (err) { console.error('Erreur destroy session :', err); }
+        if (err) console.error('Erreur destroy session :', err);
         res.clearCookie('connect.sid');
         res.redirect('/login');
     });
 });
 
-app.get('/admin', async (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    const connection = await pool.getConnection();
-    try {
-        const [commandes] = await connection.execute('SELECT * FROM commandes ORDER BY date_creation DESC');
-        const [produits] = await connection.execute('SELECT * FROM produits ORDER BY nom ASC');
-        const [messages] = await connection.execute('SELECT * FROM messages ORDER BY date_creation DESC');
-        const commandesAvecDetails = commandes.map(cmd => ({ ...cmd, articlesList: JSON.parse(cmd.articles) }));
-        let activeTab = 'orders';
-        if (req.query.tab === 'products') activeTab = 'products';
-        if (req.query.tab === 'messages') activeTab = 'messages';
-        res.render('admin', {
-            title: 'Administration - Sirani Parfumerie',
-            commandes: commandesAvecDetails,
-            produits,
-            messages,
-            activeTab
-        });
-    } catch (err) {
-        console.error('Erreur GET /admin :', err);
-        res.send('Erreur récupération données.');
-    } finally {
-        connection.release();
-    }
-});
+// Routes admin protégées
+app.use('/admin', requireAdmin, adminRouter);
 
-app.get('/admin/ajouter-produit', (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    res.render('ajouter-produit', { title: 'Ajouter Produit - Admin' });
-});
-
-app.post('/admin/ajouter-produit', upload.single('image'), async (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    const connection = await pool.getConnection();
-    try {
-        const { nom, prix, description, id_categorie } = req.body;
-        const image = req.file ? req.file.filename : 'default.jpg';
-        await connection.execute(
-            'INSERT INTO produits (nom, prix, description, image, id_categorie, stock) VALUES (?, ?, ?, ?, ?, ?)',
-            [nom, prix, description, image, id_categorie, 50]
-        );
-        res.redirect('/admin?tab=products');
-    } catch (err) {
-        console.error('Erreur POST /admin/ajouter-produit :', err);
-        res.send("Erreur lors de l'ajout du produit.");
-    } finally {
-        connection.release();
-    }
-});
-
-app.post('/admin/supprimer-produit/:id', async (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    const connection = await pool.getConnection();
-    try {
-        await connection.execute('DELETE FROM produits WHERE id = ?', [req.params.id]);
-        res.redirect('/admin');
-    } catch (err) {
-        console.error('Erreur POST /admin/supprimer-produit :', err);
-        res.send('Erreur lors de la suppression.');
-    } finally {
-        connection.release();
-    }
-});
-
-app.get('/admin/modifier-produit/:id', async (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    const connection = await pool.getConnection();
-    try {
-        const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
-        if (produits.length > 0) {
-            res.render('modifier-produit', { title: 'Modifier Produit - Admin', produit: produits[0] });
-        } else {
-            res.status(404).send('Produit non trouvé');
-        }
-    } catch (err) {
-        console.error('Erreur GET /admin/modifier-produit :', err);
-        res.send('Erreur serveur');
-    } finally {
-        connection.release();
-    }
-});
-
-app.post('/admin/modifier-produit/:id', upload.single('image'), async (req, res) => {
-    if (!req.session.isAdmin) { return res.redirect('/login'); }
-    const connection = await pool.getConnection();
-    try {
-        const { nom, prix, description, id_categorie, oldImage } = req.body;
-        const image = req.file ? req.file.filename : oldImage;
-        await connection.execute(
-            'UPDATE produits SET nom=?, prix=?, description=?, image=?, id_categorie=? WHERE id=?',
-            [nom, prix, description, image, id_categorie, req.params.id]
-        );
-        res.redirect('/admin?tab=products');
-    } catch (err) {
-        console.error('Erreur POST /admin/modifier-produit :', err);
-        res.send('Erreur lors de la modification.');
-    } finally {
-        connection.release();
-    }
-});
+// Erreurs
+app.use(notFound);
+app.use(serverError);
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Serveur lance sur le port ${port}`);

@@ -4,10 +4,24 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h1 class="display-5 fw-bold mb-4 font-serif">Nous contacter</h1>
-            
+
+            <% if (locals.success && success) { %>
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <svg class="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+                <strong>Message envoyé avec succès !</strong>&nbsp;Nous vous répondrons dans les meilleurs délais.
+            </div>
+            <% } %>
+
+            <% if (locals.errors && errors.length) { %>
+            <div class="alert alert-danger">
+                <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+            </div>
+            <% } %>
+
             <div class="card border-0 shadow-sm p-4">
-                <p class="text-muted mb-4">Une question sur une livraison ? Besoin de conseil pour un parfum ? N'hésitez pas à nous écrire.</p>
-                
+                <p class="text-muted mb-4">Une question sur une livraison ? Besoin de conseil pour un parfum ?</p>
                 <form action="/contact" method="POST">
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -19,17 +33,14 @@
                             <input type="email" name="email" class="form-control" required>
                         </div>
                     </div>
-                    
                     <div class="mb-3">
-                        <label class="form-label">Résidence</label>
-                        <input type="text" name="sujet" class="form-control" placeholder="Ex: Livraison..." required>
+                        <label class="form-label">Sujet</label>
+                        <input type="text" name="sujet" class="form-control" placeholder="Ex: Question livraison..." required>
                     </div>
-                    
                     <div class="mb-3">
                         <label class="form-label">Message</label>
                         <textarea name="contenu" class="form-control" rows="5" required></textarea>
                     </div>
-                    
                     <button type="submit" class="btn btn-dark rounded-0 px-5">Envoyer le message</button>
                 </form>
             </div>

@@ -49,3 +49,6 @@ CREATE TABLE IF NOT EXISTS `messages` (
     `date_creation` DATETIME     DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Ajout colonne statut (si nécessaire sur une DB existante)
+-- ALTER TABLE commandes ADD COLUMN statut VARCHAR(20) DEFAULT 'En attente';

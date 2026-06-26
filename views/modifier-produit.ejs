@@ -3,15 +3,17 @@
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="display-5 fw-bold mb-4 font-serif">Modifier le parfum : <%= produit.nom %></h1>
-            
-            <div class="card border-0 shadow-sm p-4">
-                <!-- IMPORTANT enctype pour l'image -->
-                <form action="/admin/modifier-produit/<%= produit.id %>" method="POST" enctype="multipart/form-data">
-                    
-                    <!-- Champ caché pour garder l'ancien nom de l'image si on n'en change pas -->
-                    <input type="hidden" name="oldImage" value="<%= produit.image %>">
+            <h1 class="display-5 fw-bold mb-4 font-serif">Modifier : <%= produit.nom %></h1>
 
+            <% if (locals.errors && errors.length) { %>
+            <div class="alert alert-danger">
+                <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+            </div>
+            <% } %>
+
+            <div class="card border-0 shadow-sm p-4">
+                <form action="/admin/modifier-produit/<%= produit.id %>" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="oldImage" value="<%= produit.image %>">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Nom du parfum</label>
@@ -19,20 +21,18 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Prix (FCFA)</label>
-                            <input type="number" name="prix" class="form-control" value="<%= produit.prix %>" required>
+                            <input type="number" name="prix" class="form-control" value="<%= produit.prix %>" min="0" required>
                         </div>
                     </div>
-                    
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea name="description" class="form-control" rows="2" required><%= produit.description %></textarea>
                     </div>
-                    
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Nouvelle Image (Laisser vide pour garder l'actuelle)</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
-                            <small class="text-muted">Image actuelle : <%= produit.image %></small>
+                            <label class="form-label">Nouvelle image <small class="text-muted">(JPEG/PNG/WebP, max 5 MB)</small></label>
+                            <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/webp">
+                            <small class="text-muted">Actuelle : <%= produit.image %></small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Catégorie</label>
@@ -43,9 +43,8 @@
                             </select>
                         </div>
                     </div>
-                    
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="/admin" class="btn btn-outline-secondary rounded-0">Annuler</a>
+                        <a href="/admin?tab=products" class="btn btn-outline-secondary rounded-0">Annuler</a>
                         <button type="submit" class="btn btn-dark rounded-0 px-5">Enregistrer les modifications</button>
                     </div>
                 </form>
