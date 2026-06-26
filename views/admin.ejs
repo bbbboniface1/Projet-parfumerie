@@ -40,6 +40,12 @@
 
         <!-- ONGLET COMMANDES -->
         <div class="tab-pane fade <%= activeTab === 'orders' ? 'show active' : '' %>" id="orders" role="tabpanel">
+            <!-- AJOUT ÉTAPE 7 : bouton export CSV -->
+            <div class="mb-3">
+                <a href="/admin/export-commandes" class="btn btn-outline-success btn-sm rounded-0">
+                    ⬇ Exporter en CSV (Excel)
+                </a>
+            </div>
             <% if (commandes && commandes.length > 0) { %>
             <div class="table-responsive">
                 <table class="table table-hover align-middle border">

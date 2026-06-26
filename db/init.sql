@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS `commandes`;
 CREATE TABLE IF NOT EXISTS `commandes` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `telephone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `adresse` text COLLATE utf8mb4_general_ci NOT NULL,
   `ville` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,

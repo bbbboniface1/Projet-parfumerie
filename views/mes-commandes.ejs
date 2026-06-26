@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+
+<h1 class="font-serif mb-2" style="font-weight:300;font-size:2.2rem;letter-spacing:2px;">Mes Commandes</h1>
+<div class="section-ornament mb-4" style="justify-content:flex-start;max-width:140px;">
+    <span class="section-ornament-diamond">◆</span>
+</div>
+
+<!-- Formulaire de recherche par email -->
+<form action="/mes-commandes" method="GET" class="mb-5">
+    <div class="d-flex align-items-center gap-3" style="max-width:480px;">
+        <input type="email"
+               name="email"
+               class="form-control rounded-0"
+               style="border:none;border-bottom:1px solid #ddd;background:transparent;padding:10px 0;"
+               placeholder="Votre adresse email"
+               value="<%= email %>"
+               required>
+        <button type="submit" class="btn-validate" style="width:auto;padding:0 28px;white-space:nowrap;">Rechercher</button>
+    </div>
+    <small class="text-muted d-block mt-2" style="font-size:0.78rem;letter-spacing:0.5px;">
+        Entrez l'email utilisé lors de votre commande.
+    </small>
+</form>
+
+<!-- Résultats -->
+<% if (email && commandes.length === 0) { %>
+    <div class="cart-empty" style="padding:40px 0;">
+        <p class="font-serif" style="font-size:1.2rem;color:var(--color-text-muted);">
+            Aucune commande trouvée pour <strong><%= email %></strong>.
+        </p>
+        <p style="font-size:0.85rem;color:var(--color-text-muted);">Vérifiez l'adresse email ou passez votre première commande.</p>
+        <a href="/" class="btn-hero d-inline-block mt-3">Voir la collection</a>
+    </div>
+<% } %>
+
+<% if (commandes.length > 0) { %>
+<div class="mb-2" style="font-size:0.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-muted);">
+    <%= commandes.length %> commande<%= commandes.length > 1 ? 's' : '' %> trouvée<%= commandes.length > 1 ? 's' : '' %>
+</div>
+
+<% commandes.forEach(function(cmd) { %>
+<div class="cart-item flex-wrap mb-3">
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <p style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--color-text-muted);margin:0;">
+                    Commande #<%= cmd.id %> — <%= new Date(cmd.date_creation).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' }) %>
+                </p>
+                <% cmd.articlesList.forEach(function(item) { %>
+                <p class="cart-item-name mb-0"><%= item.nom %> <span style="color:var(--color-text-muted);font-size:0.85rem;">× <%= item.qty %></span></p>
+                <% }); %>
+            </div>
+            <div class="text-end">
+                <p class="cart-item-price mb-1"><%= Number(cmd.total).toLocaleString('fr-FR') %> FCFA</p>
+                <%
+                    const badgeMap = { 'Livrée': 'success', 'Expédiée': 'warning', 'En attente': 'secondary' };
+                    const bClass = badgeMap[cmd.statut] || 'secondary';
+                %>
+                <span class="badge bg-<%= bClass %>" style="font-size:0.7rem;letter-spacing:1px;"><%= cmd.statut || 'En attente' %></span>
+            </div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--color-text-muted);margin-top:6px;margin-bottom:0;">
+            Paiement : <%= cmd.paiement %> &bull; <%= cmd.ville %>
+        </p>
+    </div>
+</div>
+<% }); %>
+<% } %>
+
+<%- include('partials/footer') %>

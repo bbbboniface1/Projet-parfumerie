@@ -143,8 +143,8 @@ router.post('/commande', [
             }
         }
         const [result] = await connection.execute(
-            'INSERT INTO commandes (nom, telephone, adresse, ville, codepostal, total, articles, paiement) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [nom, telephone, adresse, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
+            'INSERT INTO commandes (nom, email, telephone, adresse, ville, codepostal, total, articles, paiement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [nom, email || null, telephone, adresse, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
         );
         await connection.commit();
 
@@ -154,6 +154,8 @@ router.post('/commande', [
             commande: { id: result.insertId, articles: cart, total, paiement: paiement || 'A la livraison' }
         }).catch(err => req.log.warn(err, 'Email confirmation commande échoué'));
 
+        // AJOUT ÉTAPE 6 : stocker email pour page merci
+        if (email) req.session.lastOrderEmail = email;
         req.session.cart = null;
         res.redirect('/merci');
     } catch (err) {
@@ -167,7 +169,28 @@ router.post('/commande', [
 
 // GET /merci
 router.get('/merci', (req, res) => {
-    res.render('merci', { title: 'Merci' });
+    const lastEmail = req.session.lastOrderEmail || null;
+    if (req.session.lastOrderEmail) delete req.session.lastOrderEmail;
+    res.render('merci', { title: 'Merci', lastEmail });
+});
+
+// GET /mes-commandes — AJOUT ÉTAPE 6
+router.get('/mes-commandes', async (req, res) => {
+    const { email } = req.query;
+    if (!email) return res.render('mes-commandes', { title: 'Mes Commandes', commandes: [], email: '' });
+    const connection = await pool.getConnection();
+    try {
+        const [rows] = await connection.execute(
+            'SELECT * FROM commandes WHERE email = ? ORDER BY date_creation DESC', [email]
+        );
+        const commandes = rows.map(c => ({ ...c, articlesList: JSON.parse(c.articles) }));
+        res.render('mes-commandes', { title: 'Mes Commandes', commandes, email });
+    } catch (err) {
+        req.log.error(err, 'Erreur GET /mes-commandes');
+        res.status(500).render('errors/500', { title: 'Erreur serveur' });
+    } finally {
+        connection.release();
+    }
 });
 
 module.exports = router;

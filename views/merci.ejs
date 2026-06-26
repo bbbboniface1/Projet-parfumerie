@@ -3,16 +3,14 @@
 <div class="merci-wrapper">
 
     <!-- Check animé SVG -->
-    <svg class="merci-check" viewBox="0 0 80 80">
-        <circle cx="40" cy="40" r="36" stroke-dasharray="226" stroke-dashoffset="226"
-                style="stroke:var(--color-gold);fill:none;stroke-width:1.5;animation:drawCheck 0.6s ease 0.1s forwards;stroke-dasharray:226;stroke-dashoffset:226;"></circle>
-        <path d="M24 40 L35 51 L56 29" class="merci-check path"
-              style="fill:none;stroke:var(--color-gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:drawCheck 0.5s ease 0.7s forwards;"></path>
+    <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom:32px;">
+        <circle cx="40" cy="40" r="36"
+            style="fill:none;stroke:var(--color-gold);stroke-width:1.5;stroke-dasharray:226;stroke-dashoffset:226;animation:drawCheck 0.6s ease 0.1s forwards;"></circle>
+        <path d="M24 40 L35 51 L56 29"
+            style="fill:none;stroke:var(--color-gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:drawCheck 0.5s ease 0.7s forwards;"></path>
     </svg>
 
-    <style>
-        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
-    </style>
+    <style>@keyframes drawCheck { to { stroke-dashoffset: 0; } }</style>
 
     <h1 class="merci-title">Merci pour votre commande !</h1>
     <p class="merci-text">
@@ -20,7 +18,19 @@
         Nous vous contacterons sous peu pour confirmer la livraison.
     </p>
 
-    <a href="/" class="btn-merci">Explorer la collection</a>
+    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center">
+        <a href="/" class="btn-merci">Explorer la collection</a>
+
+        <% if (locals.lastEmail && lastEmail) { %>
+        <a href="/mes-commandes?email=<%= encodeURIComponent(lastEmail) %>" class="btn-merci" style="border-color:var(--color-black);color:var(--color-black);">
+            Voir mes commandes
+        </a>
+        <% } else { %>
+        <a href="/mes-commandes" class="btn-merci" style="border-color:var(--color-black);color:var(--color-black);">
+            Suivre une commande
+        </a>
+        <% } %>
+    </div>
 </div>
 
 <%- include('partials/footer') %>

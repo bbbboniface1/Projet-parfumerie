@@ -167,4 +167,36 @@ router.post('/commandes/:id/statut', async (req, res) => {
     }
 });
 
+// GET /admin/export-commandes — AJOUT ÉTAPE 7
+router.get('/export-commandes', async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        const [commandes] = await connection.execute(
+            'SELECT id, nom, email, telephone, ville, total, paiement, statut, date_creation FROM commandes ORDER BY date_creation DESC'
+        );
+        const headers = ['ID', 'Nom', 'Email', 'Telephone', 'Ville', 'Total FCFA', 'Paiement', 'Statut', 'Date'];
+        const rows = commandes.map(c => [
+            c.id,
+            c.nom,
+            c.email || '',
+            c.telephone,
+            c.ville,
+            c.total,
+            c.paiement,
+            c.statut || 'En attente',
+            new Date(c.date_creation).toLocaleDateString('fr-FR')
+        ]);
+        const BOM = '\uFEFF';
+        const csv = BOM + [headers, ...rows].map(row => row.join(';')).join('\n');
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="commandes_sirani_${Date.now()}.csv"`);
+        res.send(csv);
+    } catch (err) {
+        console.error('Erreur GET /admin/export-commandes :', err);
+        res.status(500).render('errors/500', { title: 'Erreur serveur' });
+    } finally {
+        connection.release();
+    }
+});
+
 module.exports = router;
