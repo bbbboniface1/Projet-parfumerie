@@ -1,6 +1,16 @@
+modules = ["nodejs-20"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+PORT = "5000"
+DB_HOST = "127.0.0.1"
+DB_USER = "root"
+DB_PASSWORD = ""
+DB_NAME = "db_parfumerie"

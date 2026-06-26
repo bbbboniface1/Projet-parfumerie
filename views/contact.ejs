@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bold mb-4 font-serif">Nous contacter</h1>
+            
+            <div class="card border-0 shadow-sm p-4">
+                <p class="text-muted mb-4">Une question sur une livraison ? Besoin de conseil pour un parfum ? N'hésitez pas à nous écrire.</p>
+                
+                <form action="/contact" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Votre Nom</label>
+                            <input type="text" name="nom" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Votre Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Résidence</label>
+                        <input type="text" name="sujet" class="form-control" placeholder="Ex: Livraison..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea name="contenu" class="form-control" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-dark rounded-0 px-5">Envoyer le message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

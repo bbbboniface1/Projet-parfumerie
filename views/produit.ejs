@@ -1,0 +1,65 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <div class="row align-items-center">
+        <!-- Colonne Image -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+           <img src="/img/<%= produit.image %>" 
+     alt="<%= produit.nom %>" 
+     class="img-fluid rounded shadow-sm" 
+     style="max-height: 450px; width: 100%; object-fit: contain; margin: auto;">
+        </div>
+
+        <!-- Colonne Détails -->
+        <div class="col-lg-6 ps-lg-5">
+            <p class="text-uppercase text-muted small ls-1">Collection Exclusive</p>
+            <h1 class="display-5 fw-bold mb-4 font-serif"><%= produit.nom %></h1>
+            
+            <h2 class="text-muted mb-4" style="color: #d4af37;">
+                <%= Number(produit.prix).toLocaleString('fr-FR') %> FCFA
+            </h2>
+            
+            <hr class="mb-4" style="border-color: #eee;">
+            
+            <p class="lead text-muted mb-5">
+                <%= produit.description %><br><br>
+                Une composition unique qui révèle votre personnalité. Un flacon raffiné pour un moment de pure olfaction.
+            </p>
+            
+            <div class="d-grid gap-2 d-md-flex">
+    <!-- Formulaire d'ajout au panier -->
+    <form action="/panier/ajouter/<%= produit.id %>" method="POST" style="display: inline;">
+        <button type="submit" class="btn btn-dark btn-lg rounded-0 px-5">
+            Ajouter au panier
+        </button>
+    </form>
+    
+    <a href="/" class="btn btn-outline-dark btn-lg rounded-0 px-4">Retour boutique</a>
+</div>
+        </div>
+    </div>
+
+    <!-- Section "Vous aimerez aussi" -->
+    <div class="mt-5 pt-5">
+        <h3 class="text-center mb-4 font-serif">Vous aimerez aussi</h3>
+        <div class="row">
+            <% autres.forEach(function(p) { %>
+                <% if(p.id !== produit.id) { %>
+                <div class="col-md-3 col-6">
+                    <div class="card mb-3 border-0">
+                        <a href="/produit/<%= p.id %>">
+                            <img src="/img/<%= p.image %>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="<%= p.nom %>">
+                        </a>
+                        <div class="card-body text-center">
+                            <small class="fw-bold"><%= p.nom %></small>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            <% }); %>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

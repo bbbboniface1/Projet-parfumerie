@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<!-- Style pour accélérer le carrousel -->
+<style>
+    /* Accélérer la transition entre les images */
+    .carousel-item {
+        transition: transform 0.4s ease-in-out;
+    }
+</style>
+
+<!-- CARROUSEL DYNAMIQUE (Bootstrap 5) -->
+<div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+    <!-- Indicateurs (les petites barres en bas) -->
+    <div class="carousel-indicators">
+        <% produits.slice(0, 3).forEach(function(p, index) { %>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="<%= index %>" 
+                class="<%= index === 0 ? 'active' : '' %>" aria-current="true"></button>
+        <% }); %>
+    </div>
+
+    <!-- Diapositives (Les Images) -->
+    <div class="carousel-inner">
+        <% produits.slice(0, 3).forEach(function(p, index) { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                <!-- Image : Hauteur fixe et adaptation (cover) -->
+                <img src="/img/<%= p.image %>" class="d-block w-100" alt="<%= p.nom %>" style="height: 560px; object-fit: cover;">
+                
+                <!-- Légende (Texte par dessus l'image) -->
+                <div class="carousel-caption d-none d-md-block text-start bg-dark bg-opacity-50 p-3 rounded">
+                    <h3 class="display-5 fw-bold" style="color: #d4af37; font-family: 'Playfair Display', serif;"><%= p.nom %></h3>
+                    <p class="lead"><%= p.description %></p>
+                    <a href="/produit/<%= p.id %>" class="btn btn-light mt-2 rounded-0">Découvrir</a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <!-- Flèches de navigation (Gauche/Droite) -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Précédent</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Suivant</span>
+    </button>
+</div>
+</div>
+
+<div class="text-center mb-5">
+   <% if (searchTerm) { %>
+    <h2 class="display-6 fw-light">Résultats pour "<%= searchTerm %>"</h2>
+    <div class="mb-4"><a href="/" class="text-muted">Voir tous les produits</a></div>
+<% } else { %>
+    <h2 class="display-6 fw-light">Nos Créations</h2>
+<% } %>
+    <div style="width: 60px; height: 2px; background-color: #d4af37; margin: 15px auto;"></div>
+</div>
+
+<!-- LISTE DES PRODUITS -->
+<div class="row">
+    <% produits.forEach(function(produit) { %>
+
+        <div class="col-md-4 mb-5">
+            <div class="card h-100">
+                <!-- Ici on va chercher le nom de l'image stocké dans la base de données -->
+                <!-- Le code : /img/ + le nom du fichier dans la colonne 'image' -->
+                <% var imagePath = '/img/' + produit.image; %>
+
+                <img src="<%= imagePath %>" 
+                     class="card-img-top" 
+                     alt="<%= produit.nom %>" 
+                     style="height: 400px; object-fit: cover;">
+                     
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title fs-4 mb-3"><%= produit.nom %></h5>
+                    <p class="card-text text-muted flex-grow-1 px-3"><%= produit.description %></p>
+                    
+                    <!-- PRIX EN FCFA -->
+                    <p class="price-tag my-3"><%= Number(produit.prix).toLocaleString('fr-FR') %> FCFA</p>
+                    
+                    <a href="/produit/<%= produit.id %>" class="btn btn-outline-dark rounded-0 px-4 mt-auto">Voir détails</a>
+                </div>
+            </div>
+        </div>
+
+    <% }); %>
+</div>
+
+<%- include('partials/footer') %>

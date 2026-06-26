@@ -1,0 +1,148 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-5 fw-bold font-serif">Administration</h1>
+        <div>
+            <a href="/admin/ajouter-produit" class="btn btn-primary me-2">Ajouter un parfum</a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">Se déconnecter</a>
+        </div>
+    </div>
+
+    <!-- ONGLETS -->
+    <ul class="nav nav-tabs mb-4" id="adminTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link <%= activeTab === 'orders' ? 'active' : '' %>" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">
+                Gestion des Commandes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link <%= activeTab === 'products' ? 'active' : '' %>" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">
+                Gestion du Catalogue
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link <%= activeTab === 'messages' ? 'active' : '' %>" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages" type="button" role="tab">
+                Messages Clients
+            </button>
+        </li>
+    </ul>
+
+    <!-- STYLE -->
+    <style>
+        #adminTab .nav-link {
+            color: #000 !important;
+            border: none !important;
+        }
+        #adminTab .nav-link.active {
+            color: #d4af37 !important;
+            border-bottom: 3px solid #d4af37 !important;
+            font-weight: bold;
+        }
+        #adminTab .nav-link:hover {
+            color: #d4af37 !important;
+            border-bottom: 3px solid #d4af37 !important;
+        }
+    </style>
+
+    <!-- CONTENU -->
+    <div class="tab-content" id="adminTabContent">
+        
+        <!-- ONGLET COMMANDES -->
+        <div class="tab-pane fade <%= activeTab === 'orders' ? 'show active' : '' %>" id="orders" role="tabpanel">
+            <% if (commandes && commandes.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border">
+                        <thead class="table-dark">
+                            <tr><th>Commande #</th><th>Client</th><th>Ville</th><th>Total</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            <% commandes.forEach(function(cmd) { %>
+                                <tr>
+                                    <td>#<%= cmd.id %></td>
+                                    <td><%= cmd.nom %><br><small class="text-muted"><%= cmd.telephone %></small></td>
+                                    <td><%= cmd.ville %></td>
+                                    <td><%= Number(cmd.total).toLocaleString('fr-FR') %> FCFA</td>
+                                    <td><button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal<%= cmd.id %>">Détails</button></td>
+                                </tr>
+                                
+                                <!-- MODAL COMMANDE -->
+                                <div class="modal fade" id="modal<%= cmd.id %>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header"><h5 class="modal-title">Commande #<%= cmd.id %></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+                                            <div class="modal-body">
+                                                <p><strong>Adresse :</strong> <%= cmd.adresse %>, <%= cmd.ville %></p>
+                                                <h6>Articles :</h6>
+                                                <ul>
+                                                    <% cmd.articlesList.forEach(function(item) { %>
+                                                        <li><%= item.nom %> x <%= item.qty %></li>
+                                                    <% }); %>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="alert alert-warning">Aucune commande.</div>
+            <% } %>
+        </div>
+
+        <!-- ONGLET PRODUITS -->
+        <div class="tab-pane fade <%= activeTab === 'products' ? 'show active' : '' %>" id="products" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle border">
+                    <thead class="table-dark">
+                        <tr><th>Image</th><th>Nom</th><th>Catégorie</th><th>Stock</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <% produits.forEach(function(p) { %>
+                            <tr>
+                                <td><img src="/img/<%= p.image %>" style="width:50px;height:50px;object-fit:cover;"></td>
+                                <td><%= p.nom %></td>
+                                <td>
+                                    <% if(p.id_categorie == 1) { %>Femme<% } %>
+                                    <% if(p.id_categorie == 2) { %>Homme<% } %>
+                                    <% if(p.id_categorie == 3) { %>Unisex<% } %>
+                                </td>
+                                <td><%= p.stock %></td>
+                                <td>
+                                    <a href="/admin/modifier-produit/<%= p.id %>" class="btn btn-sm btn-warning">Modifier</a>
+                                    <form action="/admin/supprimer-produit/<%= p.id %>" method="POST" style="display:inline;"><button class="btn btn-sm btn-danger">Supprimer</button></form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ONGLET MESSAGES -->
+        <div class="tab-pane fade <%= activeTab === 'messages' ? 'show active' : '' %>" id="messages" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle border">
+                    <thead class="table-secondary">
+                        <tr><th>Date</th><th>Client</th><th>Sujet</th></tr>
+                    </thead>
+                    <tbody>
+                        <% messages.forEach(function(msg) { %>
+                            <tr>
+                                <td><%= new Date(msg.date_creation).toLocaleDateString() %></td>
+                                <td><%= msg.nom %> (<%= msg.email %>)</td>
+                                <td><%= msg.sujet %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

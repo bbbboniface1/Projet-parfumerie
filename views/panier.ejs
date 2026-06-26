@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <h1 class="display-5 fw-bold mb-5 font-serif">Votre Panier</h1>
+
+    <% if (cart && cart.length > 0) { %>
+        
+        <div class="row">
+            <!-- Liste des produits -->
+            <div class="col-lg-8">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+    <tr>
+        <th>Produit</th>
+        <th>Prix</th>
+        <th>Quantité</th>
+        <th>Total</th>
+        <th>Action</th> <!-- Nouvelle colonne -->
+    </tr>
+</thead>
+                                               <tbody>
+                            <% var totalGeneral = 0; %>
+                            <% cart.forEach(function(item) { %>
+                                <% var sousTotal = item.prix * item.qty; %>
+                                <% totalGeneral += sousTotal; %>
+                                
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="/img/<%= item.image %>" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            <strong><%= item.nom %></strong>
+                                        </div>
+                                    </td>
+                                    <td><%= Number(item.prix).toLocaleString('fr-FR') %> FCFA</td>
+                                    <td><%= item.qty %></td>
+                                    <td class="fw-bold"><%= Number(sousTotal).toLocaleString('fr-FR') %> FCFA</td>
+                                    
+                                    <!-- NOUVEAU CODE : Bouton Supprimer (DANS le <tr>) -->
+                                    <td>
+                                        <form action="/panier/supprimer/<%= item.id %>" method="POST">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-0">Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Récapitulatif -->
+            <div class="col-lg-4">
+                <div class="card bg-light border-0 p-4">
+                    <h4 class="mb-4">Récapitulatif</h4>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total</span>
+                        <span class="fs-4 fw-bold" style="color: #d4af37;"><%= Number(totalGeneral).toLocaleString('fr-FR') %> FCFA</span>
+                    </div>
+                    <a href="/commande" class="btn btn-dark w-100 rounded-0 text-center text-decoration-none">Passer la commande</a>
+                </div>
+            </div>
+        </div>
+
+    <% } else { %>
+        
+        <!-- Si le panier est vide -->
+        <div class="text-center py-5">
+            <h3 class="text-muted">Votre panier est vide.</h3>
+            <a href="/" class="btn btn-outline-dark mt-3 rounded-0">Retourner à la boutique</a>
+        </div>
+
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
