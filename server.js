@@ -4,24 +4,39 @@ const session = require('express-session');
 const mysql = require('mysql2/promise');
 const path = require('path');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 5000;
+const isProd = process.env.NODE_ENV === 'production';
+
+// --- Sécurité HTTP headers (helmet) ---
+app.use(helmet({
+    contentSecurityPolicy: false
+}));
 
 app.use(express.urlencoded({ extended: true }));
 
+// --- Session sécurisée ---
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 6000000 }
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: 'strict',
+        maxAge: 6000000
+    }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Pool de connexions MySQL (remplace les createConnection individuelles)
+// --- Pool de connexions MySQL ---
 const pool = mysql.createPool({
     host: process.env.DB_HOST || '127.0.0.1',
     user: process.env.DB_USER || 'root',
@@ -33,6 +48,7 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+// --- Multer (upload images) ---
 const storage = multer.diskStorage({
     destination: './public/img',
     filename: (req, file, cb) => {
@@ -40,8 +56,18 @@ const storage = multer.diskStorage({
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
+// --- Rate limiting sur le login admin ---
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.',
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// --- Middleware global : panier + cache ---
 app.use((req, res, next) => {
     let cartCount = 0;
     if (req.session.cart) {
@@ -52,7 +78,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- ROUTES PUBLIQUES ---
+// ===================
+// ROUTES PUBLIQUES
+// ===================
 
 app.get('/', async (req, res) => {
     const connection = await pool.getConnection();
@@ -80,7 +108,6 @@ app.get('/produit/:id', async (req, res) => {
     const connection = await pool.getConnection();
     try {
         const [produits] = await connection.execute('SELECT * FROM produits WHERE id = ?', [req.params.id]);
-        // Produits similaires : exclure le produit courant
         const [autresProduits] = await connection.execute(
             'SELECT * FROM produits WHERE id != ? LIMIT 4',
             [req.params.id]
@@ -137,7 +164,7 @@ app.get('/commande', (req, res) => {
     res.render('commande', { title: 'Commande - Sirani Parfumerie', cart: req.session.cart, totalAmount });
 });
 
-// Validation de commande dans une transaction avec garde anti-stock-négatif
+// Validation commande — transaction + garde stock négatif
 app.post('/commande', async (req, res) => {
     const connection = await pool.getConnection();
     try {
@@ -150,7 +177,6 @@ app.post('/commande', async (req, res) => {
 
         await connection.beginTransaction();
 
-        // Déduire le stock — uniquement si stock suffisant (AND stock >= ?)
         for (const item of cart) {
             const [result] = await connection.execute(
                 'UPDATE produits SET stock = stock - ? WHERE id = ? AND stock >= ?',
@@ -208,25 +234,39 @@ app.post('/contact', async (req, res) => {
     }
 });
 
-// --- ROUTES LOGIN / ADMIN ---
+// ===================
+// ROUTES LOGIN / ADMIN
+// ===================
 
 app.get('/login', (req, res) => {
     res.render('login', { title: 'Connexion - Sirani Parfumerie' });
 });
 
-app.post('/admin/login', (req, res) => {
+// Rate-limited : 5 tentatives / 15 min
+app.post('/admin/login', loginLimiter, async (req, res) => {
     const { password } = req.body;
-    if (password === process.env.ADMIN_PASSWORD) {
-        req.session.isAdmin = true;
-        res.redirect('/admin');
-    } else {
+    try {
+        const hash = process.env.ADMIN_PASSWORD_HASH;
+        const match = await bcrypt.compare(password, hash);
+        if (match) {
+            req.session.isAdmin = true;
+            res.redirect('/admin');
+        } else {
+            res.redirect('/login?error=1');
+        }
+    } catch (err) {
+        console.error('Erreur login :', err);
         res.redirect('/login?error=1');
     }
 });
 
+// Logout sécurisé : destroy session + clear cookie
 app.get('/logout', (req, res) => {
-    req.session.isAdmin = false;
-    res.redirect('/login');
+    req.session.destroy(err => {
+        if (err) { console.error('Erreur destroy session :', err); }
+        res.clearCookie('connect.sid');
+        res.redirect('/login');
+    });
 });
 
 app.get('/admin', async (req, res) => {
