@@ -1,51 +1,104 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="display-5 fw-bold mb-4 font-serif">Nous contacter</h1>
+<div class="row g-5 mb-5">
 
-            <% if (locals.success && success) { %>
-            <div class="alert alert-success d-flex align-items-center" role="alert">
-                <svg class="me-2" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                </svg>
-                <strong>Message envoyé avec succès !</strong>&nbsp;Nous vous répondrons dans les meilleurs délais.
+    <!-- Formulaire -->
+    <div class="col-lg-7">
+        <h1 class="font-serif mb-1" style="font-weight:300;font-size:2.5rem;letter-spacing:2px;">Nous contacter</h1>
+        <div class="section-ornament mb-4" style="justify-content:flex-start;max-width:160px;">
+            <span class="section-ornament-diamond">◆</span>
+        </div>
+
+        <% if (locals.success && success) { %>
+        <div class="alert rounded-0 mb-4 d-flex align-items-center gap-3" style="background:#f0faf5;border-left:3px solid #27ae60;color:#1a5c34;">
+            <i class="fa fa-circle-check" style="font-size:1.2rem;color:#27ae60;"></i>
+            <div><strong>Message envoyé !</strong> Nous vous répondrons dans les meilleurs délais.</div>
+        </div>
+        <% } %>
+
+        <% if (locals.errors && errors.length) { %>
+        <div class="alert alert-danger rounded-0 mb-4">
+            <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+        </div>
+        <% } %>
+
+        <form action="/contact" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="nom" class="form-control rounded-0" id="nom" placeholder="Votre nom" required>
+                        <label for="nom">Votre nom</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="email" name="email" class="form-control rounded-0" id="email" placeholder="Votre email" required>
+                        <label for="email">Votre email</label>
+                    </div>
+                </div>
             </div>
-            <% } %>
 
-            <% if (locals.errors && errors.length) { %>
-            <div class="alert alert-danger">
-                <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+            <div class="form-floating mb-3">
+                <input type="text" name="sujet" class="form-control rounded-0" id="sujet" placeholder="Sujet" required>
+                <label for="sujet">Sujet</label>
             </div>
-            <% } %>
 
-            <div class="card border-0 shadow-sm p-4">
-                <p class="text-muted mb-4">Une question sur une livraison ? Besoin de conseil pour un parfum ?</p>
-                <form action="/contact" method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Votre Nom</label>
-                            <input type="text" name="nom" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Votre Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Sujet</label>
-                        <input type="text" name="sujet" class="form-control" placeholder="Ex: Question livraison..." required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Message</label>
-                        <textarea name="contenu" class="form-control" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark rounded-0 px-5">Envoyer le message</button>
-                </form>
+            <div class="form-floating mb-4">
+                <textarea name="contenu" class="form-control rounded-0" id="contenu" placeholder="Message" style="height:150px;" required></textarea>
+                <label for="contenu">Votre message</label>
+            </div>
+
+            <button type="submit" class="btn-validate" style="max-width:260px;">
+                <i class="fa fa-paper-plane me-2" style="font-size:0.75rem;"></i> Envoyer le message
+            </button>
+        </form>
+    </div>
+
+    <!-- Infos contact -->
+    <div class="col-lg-5">
+        <div class="contact-info-col h-100">
+            <h4 class="font-serif mb-4" style="color:var(--color-gold);font-weight:300;letter-spacing:2px;">Sirani Parfumerie</h4>
+
+            <div class="contact-info-item">
+                <i class="fa fa-location-dot contact-info-icon"></i>
+                <div>
+                    <p class="contact-info-label">Adresse</p>
+                    <p class="contact-info-text">Kalabanbougou, Bamako<br>République du Mali</p>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <i class="fa fa-phone contact-info-icon"></i>
+                <div>
+                    <p class="contact-info-label">Téléphone</p>
+                    <p class="contact-info-text">+223 90 85 93 97</p>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <i class="fa fa-envelope contact-info-icon"></i>
+                <div>
+                    <p class="contact-info-label">Email</p>
+                    <p class="contact-info-text">contact@sirani-parfumerie.com</p>
+                </div>
+            </div>
+
+            <div class="contact-info-item">
+                <i class="fa fa-clock contact-info-icon"></i>
+                <div>
+                    <p class="contact-info-label">Horaires</p>
+                    <p class="contact-info-text">Lun – Sam : 9h00 – 19h00<br>Dimanche : 11h00 – 17h00</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     </div>
+
 </div>
 
 <%- include('partials/footer') %>

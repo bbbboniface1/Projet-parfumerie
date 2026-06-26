@@ -1,76 +1,78 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <h1 class="display-5 fw-bold mb-5 font-serif">Votre Panier</h1>
+<h1 class="font-serif mb-5" style="font-weight:300;letter-spacing:2px;font-size:2.5rem;">Votre Panier</h1>
 
-    <% if (cart && cart.length > 0) { %>
-        
-        <div class="row">
-            <!-- Liste des produits -->
-            <div class="col-lg-8">
-                <div class="table-responsive">
-                    <table class="table align-middle">
-                        <thead class="table-light">
-    <tr>
-        <th>Produit</th>
-        <th>Prix</th>
-        <th>Quantité</th>
-        <th>Total</th>
-        <th>Action</th> <!-- Nouvelle colonne -->
-    </tr>
-</thead>
-                                               <tbody>
-                            <% var totalGeneral = 0; %>
-                            <% cart.forEach(function(item) { %>
-                                <% var sousTotal = item.prix * item.qty; %>
-                                <% totalGeneral += sousTotal; %>
-                                
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="/img/<%= item.image %>" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                            <strong><%= item.nom %></strong>
-                                        </div>
-                                    </td>
-                                    <td><%= Number(item.prix).toLocaleString('fr-FR') %> FCFA</td>
-                                    <td><%= item.qty %></td>
-                                    <td class="fw-bold"><%= Number(sousTotal).toLocaleString('fr-FR') %> FCFA</td>
-                                    
-                                    <!-- NOUVEAU CODE : Bouton Supprimer (DANS le <tr>) -->
-                                    <td>
-                                        <form action="/panier/supprimer/<%= item.id %>" method="POST">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-0">Supprimer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
+<% if (cart && cart.length > 0) { %>
+<div class="row g-4">
+
+    <!-- Liste produits -->
+    <div class="col-lg-7">
+        <% var totalGeneral = 0; %>
+        <% cart.forEach(function(item) { %>
+        <% var sousTotal = item.prix * item.qty; %>
+        <% totalGeneral += sousTotal; %>
+
+        <div class="cart-item">
+            <img src="/img/<%= item.image %>" alt="<%= item.nom %>" class="cart-item-img">
+            <div class="flex-grow-1">
+                <p class="cart-item-name mb-1"><%= item.nom %></p>
+                <p style="font-size:0.8rem;color:var(--color-text-muted);letter-spacing:1px;margin:0;">Qté : <%= item.qty %></p>
             </div>
-
-            <!-- Récapitulatif -->
-            <div class="col-lg-4">
-                <div class="card bg-light border-0 p-4">
-                    <h4 class="mb-4">Récapitulatif</h4>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Total</span>
-                        <span class="fs-4 fw-bold" style="color: #d4af37;"><%= Number(totalGeneral).toLocaleString('fr-FR') %> FCFA</span>
-                    </div>
-                    <a href="/commande" class="btn btn-dark w-100 rounded-0 text-center text-decoration-none">Passer la commande</a>
-                </div>
+            <div class="text-end">
+                <p class="cart-item-price mb-2"><%= Number(sousTotal).toLocaleString('fr-FR') %> FCFA</p>
+                <form action="/panier/supprimer/<%= item.id %>" method="POST">
+                    <button type="submit" class="btn-remove-cart">
+                        <i class="fa fa-trash-can" style="font-size:0.7rem;"></i> Retirer
+                    </button>
+                </form>
             </div>
         </div>
 
-    <% } else { %>
-        
-        <!-- Si le panier est vide -->
-        <div class="text-center py-5">
-            <h3 class="text-muted">Votre panier est vide.</h3>
-            <a href="/" class="btn btn-outline-dark mt-3 rounded-0">Retourner à la boutique</a>
-        </div>
+        <% }); %>
 
-    <% } %>
+        <div class="mt-4">
+            <a href="/" style="font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-muted);text-decoration:none;">
+                ← Continuer mes achats
+            </a>
+        </div>
+    </div>
+
+    <!-- Récapitulatif sticky -->
+    <div class="col-lg-5">
+        <div class="cart-summary">
+            <p style="font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:8px;">Récapitulatif</p>
+
+            <div class="d-flex justify-content-between align-items-end mb-4 pb-3" style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                <span style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Total commande</span>
+                <span class="cart-total-amount"><%= Number(totalGeneral).toLocaleString('fr-FR') %> <span style="font-size:0.85rem;">FCFA</span></span>
+            </div>
+
+            <a href="/commande" class="btn-checkout mb-3">
+                <i class="fa fa-lock me-2" style="font-size:0.75rem;"></i> Passer la commande
+            </a>
+
+            <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:0.5px;margin-top:12px;">
+                🔒 Paiement sécurisé &bull; Livraison Bamako
+            </p>
+        </div>
+    </div>
 </div>
+
+<% } else { %>
+
+<div class="cart-empty">
+    <div class="cart-empty-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+    </div>
+    <h3 class="font-serif mb-2" style="font-weight:300;letter-spacing:2px;">Votre panier est vide</h3>
+    <p style="color:var(--color-text-muted);margin-bottom:32px;">Découvrez nos créations olfactives et laissez-vous séduire.</p>
+    <a href="/" class="btn-hero">Explorer la collection</a>
+</div>
+
+<% } %>
 
 <%- include('partials/footer') %>

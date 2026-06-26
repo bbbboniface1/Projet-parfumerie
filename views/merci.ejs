@@ -1,14 +1,26 @@
 <%- include('partials/header') %>
 
-<div class="container text-center py-5 my-5">
-    <div style="color: #d4af37; font-size: 4rem;">&#10003;</div>
-    <h1 class="display-5 fw-bold mb-4">Merci !</h1>
-    <p class="lead text-muted mb-4">
-        Votre commande a été enregistrée avec succès chez <strong>Sirani Parfumerie</strong>.
+<div class="merci-wrapper">
+
+    <!-- Check animé SVG -->
+    <svg class="merci-check" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="36" stroke-dasharray="226" stroke-dashoffset="226"
+                style="stroke:var(--color-gold);fill:none;stroke-width:1.5;animation:drawCheck 0.6s ease 0.1s forwards;stroke-dasharray:226;stroke-dashoffset:226;"></circle>
+        <path d="M24 40 L35 51 L56 29" class="merci-check path"
+              style="fill:none;stroke:var(--color-gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:50;stroke-dashoffset:50;animation:drawCheck 0.5s ease 0.7s forwards;"></path>
+    </svg>
+
+    <style>
+        @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+    </style>
+
+    <h1 class="merci-title">Merci pour votre commande !</h1>
+    <p class="merci-text">
+        Votre commande a été enregistrée avec succès chez <strong>Sirani Parfumerie</strong>.<br>
+        Nous vous contacterons sous peu pour confirmer la livraison.
     </p>
-    <p class="mb-5">Nous préparerons votre colis avec le plus grand soin.</p>
-    
-    <a href="/" class="btn btn-dark btn-lg rounded-0 px-5">Retourner à la boutique</a>
+
+    <a href="/" class="btn-merci">Explorer la collection</a>
 </div>
 
 <%- include('partials/footer') %>

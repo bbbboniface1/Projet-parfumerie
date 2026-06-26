@@ -1,85 +1,98 @@
 <%- include('partials/header') %>
 
-<style>
-    .carousel-item { transition: transform 0.4s ease-in-out; }
-    .carousel-item img { height: clamp(250px, 50vw, 560px); object-fit: cover; }
-    .filter-btn.active { background-color: #d4af37; border-color: #d4af37; color: #fff; }
-</style>
+<!-- CARROUSEL HERO (full-width via breakout) -->
+<div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;">
+    <div id="mainCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
 
-<!-- CARROUSEL -->
-<div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
-    <div class="carousel-indicators">
-        <% produits.slice(0, 3).forEach(function(p, index) { %>
-            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="<%= index %>"
-                class="<%= index === 0 ? 'active' : '' %>" aria-current="true"></button>
-        <% }); %>
-    </div>
-    <div class="carousel-inner">
-        <% produits.slice(0, 3).forEach(function(p, index) { %>
-            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                <img src="/img/<%= p.image %>" class="d-block w-100" alt="<%= p.nom %>" <%= index > 0 ? 'loading="lazy"' : '' %>>
-                <div class="carousel-caption d-none d-md-block text-start bg-dark bg-opacity-50 p-3 rounded">
-                    <h3 class="display-5 fw-bold" style="color:#d4af37;font-family:'Playfair Display',serif;"><%= p.nom %></h3>
-                    <p class="lead"><%= p.description %></p>
-                    <a href="/produit/<%= p.id %>" class="btn btn-light mt-2 rounded-0">Découvrir</a>
+        <div class="carousel-indicators">
+            <% produits.slice(0, 3).forEach(function(p, index) { %>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="<%= index %>"
+                    class="<%= index === 0 ? 'active' : '' %>" aria-label="Slide <%= index + 1 %>"></button>
+            <% }); %>
+        </div>
+
+        <div class="carousel-inner">
+            <% produits.slice(0, 3).forEach(function(p, index) { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                    <img src="/img/<%= p.image %>"
+                         class="d-block w-100"
+                         alt="<%= p.nom %>"
+                         <%= index > 0 ? 'loading="lazy"' : '' %>>
+                    <div class="hero-overlay"></div>
+                    <div class="carousel-caption hero-caption d-block">
+                        <p class="hero-caption-sub"><%= p.id_categorie == 1 ? 'Collection Femme' : p.id_categorie == 2 ? 'Collection Homme' : 'Collection Unisex' %></p>
+                        <h2 class="hero-caption-title"><%= p.nom %></h2>
+                        <a href="/produit/<%= p.id %>" class="btn-hero">Découvrir</a>
+                    </div>
                 </div>
-            </div>
-        <% }); %>
+            <% }); %>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Suivant</span>
+        </button>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Précédent</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Suivant</span>
-    </button>
 </div>
 
-<!-- TITRE + FILTRES -->
+<!-- TITRE & FILTRES -->
 <div class="text-center mb-4 mt-5">
     <% if (searchTerm) { %>
-        <h2 class="display-6 fw-light">Résultats pour "<%= searchTerm %>"</h2>
-        <div class="mb-3"><a href="/" class="text-muted">Voir tous les produits</a></div>
+        <h2 class="display-6 fw-light font-serif">Résultats pour "<%= searchTerm %>"</h2>
+        <div class="mb-2">
+            <a href="/" style="font-size:0.82rem;letter-spacing:1px;color:var(--color-text-muted);text-decoration:none;">← Voir tous les produits</a>
+        </div>
     <% } else { %>
-        <h2 class="display-6 fw-light">Nos Créations</h2>
+        <h2 class="font-serif" style="font-size:2.2rem;font-weight:300;letter-spacing:3px;">Nos Créations</h2>
     <% } %>
-    <div style="width:60px;height:2px;background-color:#d4af37;margin:15px auto;"></div>
 
-    <!-- Filtres catégorie -->
+    <div class="section-ornament mx-auto" style="max-width:200px;">
+        <span class="section-ornament-diamond">◆</span>
+    </div>
+
     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
         <a href="/?<%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>page=1"
-           class="btn btn-sm btn-outline-dark rounded-0 filter-btn <%= !categorie ? 'active' : '' %>">Tous</a>
+           class="btn filter-btn <%= !categorie ? 'active' : '' %>">Tous</a>
         <a href="/?<%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>categorie=1&page=1"
-           class="btn btn-sm btn-outline-dark rounded-0 filter-btn <%= categorie == '1' ? 'active' : '' %>">Femme</a>
+           class="btn filter-btn <%= categorie == '1' ? 'active' : '' %>">Femme</a>
         <a href="/?<%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>categorie=2&page=1"
-           class="btn btn-sm btn-outline-dark rounded-0 filter-btn <%= categorie == '2' ? 'active' : '' %>">Homme</a>
+           class="btn filter-btn <%= categorie == '2' ? 'active' : '' %>">Homme</a>
         <a href="/?<%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>categorie=3&page=1"
-           class="btn btn-sm btn-outline-dark rounded-0 filter-btn <%= categorie == '3' ? 'active' : '' %>">Unisex</a>
+           class="btn filter-btn <%= categorie == '3' ? 'active' : '' %>">Unisex</a>
     </div>
 </div>
 
 <!-- GRILLE PRODUITS -->
-<div class="row">
+<div class="row g-4 mb-5">
     <% if (produits.length === 0) { %>
         <div class="col text-center py-5">
             <p class="text-muted">Aucun produit trouvé.</p>
-            <a href="/" class="btn btn-outline-dark rounded-0">Voir tout le catalogue</a>
+            <a href="/" class="btn-hero d-inline-block mt-3">Voir tout le catalogue</a>
         </div>
     <% } %>
     <% produits.forEach(function(produit, idx) { %>
-        <div class="col-md-4 mb-5">
-            <div class="card h-100">
-                <img src="/img/<%= produit.image %>"
-                     class="card-img-top"
-                     alt="<%= produit.nom %>"
-                     style="height:400px;object-fit:cover;"
-                     <%= idx >= 3 ? 'loading="lazy"' : '' %>>
-                <div class="card-body text-center d-flex flex-column">
-                    <h5 class="card-title fs-4 mb-3"><%= produit.nom %></h5>
-                    <p class="card-text text-muted flex-grow-1 px-3"><%= produit.description %></p>
-                    <p class="price-tag my-3"><%= Number(produit.prix).toLocaleString('fr-FR') %> FCFA</p>
-                    <a href="/produit/<%= produit.id %>" class="btn btn-outline-dark rounded-0 px-4 mt-auto">Voir détails</a>
+        <div class="col-xl-3 col-md-4 col-sm-6">
+            <div class="product-card">
+                <div class="product-card-img-wrap">
+                    <img src="/img/<%= produit.image %>"
+                         alt="<%= produit.nom %>"
+                         <%= idx >= 4 ? 'loading="lazy"' : '' %>>
+                    <% if (produit.stock <= 0) { %>
+                        <span class="product-card-badge badge-epuise">Épuisé</span>
+                    <% } %>
+                    <div class="product-card-overlay">
+                        <a href="/produit/<%= produit.id %>" class="product-card-overlay-btn">Voir détails</a>
+                    </div>
+                </div>
+                <div class="product-card-body">
+                    <h5 class="product-card-name"><%= produit.nom %></h5>
+                    <div class="product-card-price-wrap">
+                        <span class="product-card-price"><%= Number(produit.prix).toLocaleString('fr-FR') %> FCFA</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,14 +104,45 @@
 <nav class="d-flex justify-content-center align-items-center gap-3 mt-2 mb-5">
     <% if (page > 1) { %>
         <a href="/?<%= categorie ? 'categorie='+categorie+'&' : '' %><%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>page=<%= page - 1 %>"
-           class="btn btn-outline-dark rounded-0">← Précédent</a>
+           class="btn-hero">← Précédent</a>
     <% } %>
-    <span class="text-muted">Page <%= page %> / <%= totalPages %></span>
+    <span style="font-size:0.8rem;letter-spacing:1.5px;color:var(--color-text-muted);">Page <%= page %> / <%= totalPages %></span>
     <% if (page < totalPages) { %>
         <a href="/?<%= categorie ? 'categorie='+categorie+'&' : '' %><%= searchTerm ? 'q='+encodeURIComponent(searchTerm)+'&' : '' %>page=<%= page + 1 %>"
-           class="btn btn-outline-dark rounded-0">Suivant →</a>
+           class="btn-hero">Suivant →</a>
     <% } %>
 </nav>
 <% } %>
+
+<!-- SECTION PHILOSOPHIE (full-width breakout) -->
+<div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;">
+    <div class="philosophy-section">
+        <div class="container text-center">
+
+            <div class="section-ornament justify-content-center mb-3">
+                <span class="section-ornament-diamond" style="font-size:0.5rem;">◆</span>
+            </div>
+            <h2 class="philosophy-title mb-5">L'art de sentir</h2>
+
+            <div class="row justify-content-center g-4">
+                <div class="col-md-4 philosophy-item">
+                    <span class="philosophy-icon">✦</span>
+                    <h5>Ingrédients rares</h5>
+                    <p>Des matières premières soigneusement sélectionnées aux quatre coins du monde pour des fragrances uniques.</p>
+                </div>
+                <div class="col-md-4 philosophy-item">
+                    <span class="philosophy-icon">✦</span>
+                    <h5>Artisanat malien</h5>
+                    <p>Chaque parfum est une œuvre créée avec passion par nos artisans parfumeurs à Bamako.</p>
+                </div>
+                <div class="col-md-4 philosophy-item">
+                    <span class="philosophy-icon">✦</span>
+                    <h5>Livraison Bamako</h5>
+                    <p>Livraison rapide et soignée à domicile dans tout Bamako. Votre parfum, livré avec élégance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%- include('partials/footer') %>

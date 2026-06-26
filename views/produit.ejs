@@ -1,63 +1,108 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-            <img src="/img/<%= produit.image %>"
-                 alt="<%= produit.nom %>"
-                 class="img-fluid rounded shadow-sm"
-                 style="max-height:450px;width:100%;object-fit:contain;margin:auto;">
+<!-- BREADCRUMB -->
+<nav class="breadcrumb-sirani mb-4">
+    <a href="/">Accueil</a>
+    <span class="mx-2">›</span>
+    <a href="/">Collection</a>
+    <span class="mx-2">›</span>
+    <span><%= produit.nom %></span>
+</nav>
+
+<!-- DÉTAIL PRODUIT -->
+<div class="row align-items-start g-5 mb-5">
+
+    <!-- Colonne image -->
+    <div class="col-lg-6">
+        <div class="product-img-bg">
+            <img src="/img/<%= produit.image %>" alt="<%= produit.nom %>">
         </div>
-        <div class="col-lg-6 ps-lg-5">
-            <p class="text-uppercase text-muted small">Collection Exclusive</p>
-            <h1 class="display-5 fw-bold mb-4 font-serif"><%= produit.nom %></h1>
-            <h2 class="mb-4" style="color:#d4af37;"><%= Number(produit.prix).toLocaleString('fr-FR') %> FCFA</h2>
-            <hr class="mb-3" style="border-color:#eee;">
-
-            <!-- Badge stock -->
-            <% if (produit.stock <= 0) { %>
-                <span class="badge bg-danger mb-3 fs-6">Épuisé</span>
-            <% } else if (produit.stock <= 5) { %>
-                <span class="badge bg-warning text-dark mb-3 fs-6">Plus que <%= produit.stock %> en stock !</span>
-            <% } else { %>
-                <span class="badge bg-success mb-3 fs-6">En stock</span>
-            <% } %>
-
-            <p class="lead text-muted mb-5">
-                <%= produit.description %><br><br>
-                Une composition unique qui révèle votre personnalité. Un flacon raffiné pour un moment de pure olfaction.
-            </p>
-
-            <div class="d-grid gap-2 d-md-flex">
-                <% if (produit.stock > 0) { %>
-                <form action="/panier/ajouter/<%= produit.id %>" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-dark btn-lg rounded-0 px-5">Ajouter au panier</button>
-                </form>
-                <% } else { %>
-                <button class="btn btn-secondary btn-lg rounded-0 px-5" disabled>Épuisé</button>
-                <% } %>
-                <a href="/" class="btn btn-outline-dark btn-lg rounded-0 px-4">Retour boutique</a>
-            </div>
+        <!-- Dots galerie (visuel) -->
+        <div class="product-img-dots mt-3">
+            <div class="product-img-dot active"></div>
+            <div class="product-img-dot"></div>
+            <div class="product-img-dot"></div>
         </div>
     </div>
 
-    <!-- Produits similaires -->
-    <div class="mt-5 pt-5">
-        <h3 class="text-center mb-4 font-serif">Vous aimerez aussi</h3>
-        <div class="row">
-            <% autres.forEach(function(p) { %>
-            <div class="col-md-3 col-6">
-                <div class="card mb-3 border-0">
-                    <a href="/produit/<%= p.id %>">
-                        <img src="/img/<%= p.image %>" class="card-img-top" loading="lazy"
-                             style="height:200px;object-fit:cover;" alt="<%= p.nom %>">
-                    </a>
-                    <div class="card-body text-center"><small class="fw-bold"><%= p.nom %></small></div>
-                </div>
+    <!-- Colonne détails -->
+    <div class="col-lg-6">
+        <span class="product-category-label">
+            <%= produit.id_categorie == 1 ? 'Collection Femme' : produit.id_categorie == 2 ? 'Collection Homme' : 'Collection Unisex' %>
+        </span>
+
+        <h1 class="product-title"><%= produit.nom %></h1>
+        <div class="product-separator"></div>
+
+        <div class="mb-3">
+            <span class="product-price"><%= Number(produit.prix).toLocaleString('fr-FR') %> <sup style="font-size:1rem;">FCFA</sup></span>
+        </div>
+
+        <!-- Badge stock -->
+        <div class="mb-4">
+            <% if (produit.stock <= 0) { %>
+                <span class="badge fs-6" style="background:#c0392b;border-radius:2px;letter-spacing:1px;">Épuisé</span>
+            <% } else if (produit.stock <= 5) { %>
+                <span class="badge text-dark fs-6" style="background:var(--color-gold-light);border-radius:2px;letter-spacing:1px;">Plus que <%= produit.stock %> en stock</span>
+            <% } else { %>
+                <span class="badge fs-6" style="background:#27ae60;border-radius:2px;letter-spacing:1px;">En stock</span>
+            <% } %>
+        </div>
+
+        <p class="product-description"><%= produit.description %><br><br>
+            Une composition unique qui révèle votre personnalité. Un flacon raffiné pour un moment de pure olfaction.
+        </p>
+
+        <div class="mt-4">
+            <% if (produit.stock > 0) { %>
+            <form action="/panier/ajouter/<%= produit.id %>" method="POST" class="mb-3">
+                <button type="submit" class="btn-add-cart">
+                    <i class="fa fa-bag-shopping me-2"></i> Ajouter au panier
+                </button>
+            </form>
+            <% } else { %>
+            <button class="btn-add-cart" disabled style="opacity:0.5;cursor:not-allowed;">Épuisé</button>
+            <% } %>
+
+            <div class="mt-3">
+                <a href="/" class="btn-back-shop">Retour boutique</a>
             </div>
-            <% }); %>
         </div>
     </div>
 </div>
 
 <%- include('partials/footer') %>
+
+<!-- SECTION PRODUITS SIMILAIRES (full-width) -->
+<div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;">
+    <div class="similaires-section py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h3 class="font-serif" style="font-weight:300;letter-spacing:2px;">Vous aimerez aussi</h3>
+                <div class="section-ornament mx-auto" style="max-width:160px;">
+                    <span class="section-ornament-diamond">◆</span>
+                </div>
+            </div>
+            <div class="row g-3">
+                <% autres.forEach(function(p) { %>
+                <div class="col-md-3 col-6">
+                    <a href="/produit/<%= p.id %>" class="text-decoration-none">
+                        <div style="background:#fff;overflow:hidden;">
+                            <img src="/img/<%= p.image %>"
+                                 loading="lazy"
+                                 style="width:100%;height:220px;object-fit:cover;display:block;transition:transform 0.5s ease;"
+                                 alt="<%= p.nom %>"
+                                 onmouseover="this.style.transform='scale(1.05)'"
+                                 onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                        <div style="padding:14px 0 4px;">
+                            <p style="font-family:var(--font-serif);font-size:1rem;color:var(--color-black);margin:0;letter-spacing:1px;"><%= p.nom %></p>
+                            <p style="color:var(--color-gold);font-size:0.85rem;font-weight:700;margin:4px 0 0;"><%= Number(p.prix).toLocaleString('fr-FR') %> FCFA</p>
+                        </div>
+                    </a>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>

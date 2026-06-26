@@ -1,27 +1,46 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card border-0 shadow p-4">
-                <h3 class="text-center mb-4 font-serif">Accès Admin</h3>
+</div><!-- ferme le container du header -->
 
-                <% if (locals.error && error) { %>
-                <div class="alert alert-danger py-2 text-center" role="alert">
-                    <strong>Mot de passe incorrect.</strong> Réessayez.
-                </div>
-                <% } %>
+<div class="login-wrapper" style="margin-top:-24px;">
+    <div class="login-card">
 
-                <form action="/admin/login" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Mot de passe</label>
-                        <input type="password" name="password" class="form-control" autocomplete="current-password" required>
-                    </div>
-                    <button type="submit" class="btn btn-dark w-100 rounded-0">Entrer</button>
-                </form>
-            </div>
+        <p class="login-logo">Sirani Parfumerie</p>
+        <p class="login-subtitle">Espace Administration</p>
+
+        <% if (locals.error && error) { %>
+        <div class="alert rounded-0 mb-4 d-flex align-items-center gap-2" style="background:#fff3f3;border-left:3px solid #c0392b;color:#7b241c;font-size:0.88rem;">
+            <i class="fa fa-triangle-exclamation"></i>
+            <span><strong>Mot de passe incorrect.</strong> Réessayez.</span>
         </div>
+        <% } %>
+
+        <form action="/admin/login" method="POST">
+            <div class="mb-4">
+                <label style="font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--color-text-muted);display:block;margin-bottom:8px;">Mot de passe</label>
+                <div class="password-wrap">
+                    <input type="password"
+                           name="password"
+                           id="password-input"
+                           class="form-control rounded-0"
+                           style="border:none;border-bottom:1px solid #ddd;background:transparent;padding:10px 40px 10px 0;"
+                           autocomplete="current-password"
+                           required>
+                    <button type="button" id="password-toggle" class="password-toggle" aria-label="Afficher/masquer">
+                        <i class="fa fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">
+                Entrer <i class="fa fa-arrow-right ms-2" style="font-size:0.75rem;"></i>
+            </button>
+        </form>
+
+        <p style="text-align:center;margin-top:28px;font-size:0.72rem;color:var(--color-text-muted);letter-spacing:1px;">
+            <a href="/" style="color:var(--color-text-muted);text-decoration:none;">← Retour à la boutique</a>
+        </p>
     </div>
 </div>
 
+<div class="container"><!-- réouvre le container pour le footer -->
 <%- include('partials/footer') %>

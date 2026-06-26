@@ -1,47 +1,111 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-            <h1 class="display-4 fw-bold mb-3" style="color: #111;">Notre Atelier</h1>
-            <p class="lead text-muted mb-4">
-                L'art de la parfumerie ne s'improvise pas. <br>
-                Chez <strong>Sirani Parfumerie</strong>, chaque fragrance est le résultat d'une alchimie minutieuse entre tradition et innovation.
-            </p>
-            <p>
-                Nous sourçons les ingrédients les plus rares à travers le monde. De la rose de Damas au bois de santal de Mysore, nos nez-créateurs composent des symphonies olfactives qui capturent l'essence même de l'émotion.
-            </p>
-            <p class="small text-muted fst-italic mt-4">
+<!-- HERO ATELIER (full-width) -->
+<div style="position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw;width:100vw;margin-bottom:60px;">
+    <div class="atelier-hero">
+        <div class="text-center px-4">
+            <div class="section-ornament justify-content-center mb-3">
+                <span class="section-ornament-diamond" style="font-size:0.5rem;">◆</span>
+            </div>
+            <h1 class="atelier-hero-title">Notre Atelier</h1>
+            <p style="color:rgba(255,255,255,0.55);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;margin-top:12px;">L'art de la parfumerie malienne</p>
+        </div>
+    </div>
+</div>
+
+<!-- INTRODUCTION -->
+<div class="row align-items-center g-5 mb-5">
+    <div class="col-lg-6">
+        <span style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--color-gold);display:block;margin-bottom:12px;">Notre histoire</span>
+        <h2 class="font-serif mb-4" style="font-weight:300;font-size:2.5rem;letter-spacing:2px;line-height:1.2;">L'alchimie entre<br>tradition et innovation</h2>
+        <p class="mb-3" style="line-height:1.8;color:var(--color-text-muted);">
+            Chez <strong style="color:var(--color-black);">Sirani Parfumerie</strong>, chaque fragrance est le résultat d'une alchimie minutieuse. Nous sourçons les ingrédients les plus rares à travers le monde — de la rose de Damas au bois de santal de Mysore.
+        </p>
+        <p style="line-height:1.8;color:var(--color-text-muted);">
+            Nos créateurs composent des symphonies olfactives qui capturent l'essence même de l'émotion et l'âme du Mali.
+        </p>
+        <blockquote class="mt-4 ps-4" style="border-left:2px solid var(--color-gold);">
+            <p class="fst-italic" style="color:var(--color-text-muted);font-size:0.95rem;line-height:1.7;">
                 "Un parfum n'est pas seulement une odeur, c'est une porte ouverte sur l'invisible."
             </p>
+        </blockquote>
+    </div>
+    <div class="col-lg-6">
+        <img src="/img/banniere.jpg"
+             alt="Atelier Sirani Parfumerie"
+             loading="lazy"
+             style="width:100%;height:420px;object-fit:cover;border-radius:var(--radius);">
+    </div>
+</div>
+
+<!-- ENGAGEMENTS -->
+<div class="text-center mb-4">
+    <h2 class="font-serif" style="font-weight:300;letter-spacing:2px;font-size:2rem;">Nos Engagements</h2>
+    <div class="section-ornament mx-auto" style="max-width:160px;">
+        <span class="section-ornament-diamond">◆</span>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="engagement-card">
+            <i class="fa fa-gem"></i>
+            <h5>Ingrédients Rares</h5>
+            <p>Une sélection exclusive de matières premières nobles et durables, sourcées aux quatre coins du monde.</p>
         </div>
-        <div class="col-lg-6">
-            <!-- Image de l'atelier (utilisez la bannière pour l'instant ou une autre) -->
-            <img src="/img/banniere.jpg" alt="Atelier de parfumerie" class="img-fluid rounded shadow" style="max-height: 450px; object-fit: cover; width: 100%;">
+    </div>
+    <div class="col-md-4">
+        <div class="engagement-card">
+            <i class="fa fa-hand-sparkles"></i>
+            <h5>Création Artisanale</h5>
+            <p>Des parfums macérés pendant des semaines par nos artisans pour une tenue et une intensité exceptionnelles.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="engagement-card">
+            <i class="fa fa-bottle-droplet"></i>
+            <h5>Flacons Collector</h5>
+            <p>Des contenants conçus comme de véritables pièces de collection, alliant raffinement et élégance.</p>
+        </div>
+    </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="text-center mb-4 mt-5">
+    <h2 class="font-serif" style="font-weight:300;letter-spacing:2px;font-size:2rem;">La création d'un parfum Sirani</h2>
+    <div class="section-ornament mx-auto" style="max-width:160px;">
+        <span class="section-ornament-diamond">◆</span>
+    </div>
+</div>
+
+<div class="timeline mb-5">
+    <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+            <h5>01 — Sélection des matières</h5>
+            <p style="font-size:0.88rem;color:var(--color-text-muted);line-height:1.7;">
+                Notre équipe sélectionne avec soin les ingrédients naturels les plus précieux. Chaque matière première est testée pour sa pureté et son intensité olfactive.
+            </p>
         </div>
     </div>
 
-    <div class="mt-5 pt-5">
-        <h3 class="text-center mb-5 font-serif">Nos Engagements</h3>
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <div class="p-4 border rounded bg-light h-100">
-                    <h4 class="fw-bold" style="color: #d4af37;">Ingrédients Rares</h4>
-                    <p class="text-muted">Une sélection exclusive de matières premières nobles et durables.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="p-4 border rounded bg-light h-100">
-                    <h4 class="fw-bold" style="color: #d4af37;">Création Artisanale</h4>
-                    <p class="text-muted">Des parfums macérés pendant des semaines pour une tenue exceptionnelle.</p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="p-4 border rounded bg-light h-100">
-                    <h4 class="fw-bold" style="color: #d4af37;">Design Luxe</h4>
-                    <p class="text-muted">Des flacons conçus comme de véritables pièces de collection.</p>
-                </div>
-            </div>
+    <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+            <h5>02 — Composition & Macération</h5>
+            <p style="font-size:0.88rem;color:var(--color-text-muted);line-height:1.7;">
+                Le maître parfumeur compose la formule unique. Le mélange macère ensuite pendant plusieurs semaines pour que les notes se fondent harmonieusement.
+            </p>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+            <h5>03 — Mise en flacon & Livraison</h5>
+            <p style="font-size:0.88rem;color:var(--color-text-muted);line-height:1.7;">
+                Le parfum est mis en flacon à la main, chaque pièce est inspectée et soigneusement emballée avant d'être livrée directement chez vous à Bamako.
+            </p>
         </div>
     </div>
 </div>

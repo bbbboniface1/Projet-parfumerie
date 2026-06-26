@@ -1,76 +1,125 @@
 <%- include('partials/header') %>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h1 class="display-5 fw-bold mb-4 font-serif">Finaliser la commande</h1>
+<!-- STEPPER -->
+<div class="order-stepper mb-5">
+    <div class="stepper-step done">
+        <div class="stepper-circle"><i class="fa fa-check" style="font-size:0.8rem;"></i></div>
+        <span class="stepper-label">Panier</span>
+    </div>
+    <div class="stepper-line"></div>
+    <div class="stepper-step active">
+        <div class="stepper-circle">2</div>
+        <span class="stepper-label">Livraison</span>
+    </div>
+    <div class="stepper-line"></div>
+    <div class="stepper-step">
+        <div class="stepper-circle">3</div>
+        <span class="stepper-label">Confirmation</span>
+    </div>
+</div>
 
-            <% if (locals.errors && errors.length) { %>
-            <div class="alert alert-danger">
-                <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+<div class="row g-5">
+    <div class="col-lg-7">
+        <h2 class="font-serif mb-4" style="font-weight:300;font-size:1.8rem;letter-spacing:2px;">Informations de livraison</h2>
+
+        <% if (locals.errors && errors.length) { %>
+        <div class="alert alert-danger rounded-0 mb-4">
+            <ul class="mb-0"><% errors.forEach(e => { %><li><%= e.msg %></li><% }); %></ul>
+        </div>
+        <% } %>
+
+        <form action="/commande" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="nom" class="form-control rounded-0" id="nom" placeholder="Nom complet" required>
+                        <label for="nom">Nom complet</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="tel" name="telephone" class="form-control rounded-0" id="telephone" placeholder="Téléphone" required>
+                        <label for="telephone">Téléphone</label>
+                    </div>
+                </div>
             </div>
-            <% } %>
 
-            <div class="card border-0 shadow-sm p-4">
-                <h4 class="mb-4">Informations de livraison</h4>
-                <form action="/commande" method="POST">
+            <div class="form-floating mb-3">
+                <input type="email" name="email" class="form-control rounded-0" id="email" placeholder="Email (optionnel)">
+                <label for="email">Email <span style="color:var(--color-text-muted);font-size:0.8em;">(optionnel — confirmation par email)</span></label>
+            </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Nom complet</label>
-                            <input type="text" name="nom" class="form-control" placeholder="Votre nom" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Téléphone</label>
-                            <input type="tel" name="telephone" class="form-control" placeholder="+223..." required>
-                        </div>
+            <div class="form-floating mb-3">
+                <textarea name="adresse" class="form-control rounded-0" id="adresse" placeholder="Adresse" style="height:90px;" required></textarea>
+                <label for="adresse">Adresse de livraison</label>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="ville" class="form-control rounded-0" id="ville" placeholder="Ville" required>
+                        <label for="ville">Ville</label>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email <small class="text-muted">(optionnel — pour recevoir la confirmation par email)</small></label>
-                        <input type="email" name="email" class="form-control" placeholder="votre@email.com">
+                </div>
+                <div class="col-md-5">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="codepostal" class="form-control rounded-0" id="codepostal" placeholder="Code Postal" required>
+                        <label for="codepostal">Code Postal</label>
                     </div>
+                </div>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Adresse de livraison</label>
-                        <textarea name="adresse" class="form-control" rows="3" placeholder="Rue, Quartier..." required></textarea>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ville</label>
-                            <input type="text" name="ville" class="form-control" required>
+            <!-- Paiement -->
+            <h5 class="font-serif mt-2 mb-3" style="font-weight:400;letter-spacing:1.5px;">Mode de paiement</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="payment-card selected w-100" style="cursor:pointer;">
+                        <input type="radio" name="paiement" value="A la livraison" class="d-none" checked>
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fa fa-money-bill-wave" style="font-size:1.2rem;color:var(--color-gold);"></i>
+                            <div>
+                                <p class="mb-0 fw-bold" style="font-size:0.9rem;">À la livraison</p>
+                                <p class="mb-0" style="font-size:0.75rem;opacity:0.6;">Paiement cash</p>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Code Postal</label>
-                            <input type="text" name="codepostal" class="form-control" required>
+                    </label>
+                </div>
+                <div class="col-md-6">
+                    <label class="payment-card w-100" style="cursor:pointer;">
+                        <input type="radio" name="paiement" value="Orange Money" class="d-none">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="fa fa-mobile-screen" style="font-size:1.2rem;color:#f77f00;"></i>
+                            <div>
+                                <p class="mb-0 fw-bold" style="font-size:0.9rem;">Orange Money</p>
+                                <p class="mb-0" style="font-size:0.75rem;opacity:0.6;">Paiement mobile</p>
+                            </div>
                         </div>
-                    </div>
+                    </label>
+                </div>
+            </div>
 
-                    <div class="mb-4 p-3 bg-light rounded border">
-                        <label class="form-label fw-bold">Mode de paiement</label>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="paiement" id="livraison" value="A la livraison" checked>
-                            <label class="form-check-label" for="livraison">Paiement à la livraison (Cash)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="paiement" id="orange" value="Orange Money">
-                            <label class="form-check-label" for="orange">Orange Money (Manuel)</label>
-                        </div>
-                    </div>
+            <button type="submit" class="btn-validate">
+                <i class="fa fa-lock me-2" style="font-size:0.75rem;"></i> Valider la commande
+            </button>
+        </form>
+    </div>
 
-                    <div class="bg-light p-3 rounded mb-4">
-                        <div class="d-flex justify-content-between fw-bold">
-                            <span>Montant Total à payer :</span>
-                            <span style="color:#d4af37;"><%= Number(totalAmount).toLocaleString('fr-FR') %> FCFA</span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between">
-                        <a href="/panier" class="btn btn-outline-dark rounded-0">Retour Panier</a>
-                        <button type="submit" class="btn btn-dark rounded-0 px-5">Valider la commande</button>
-                    </div>
-                </form>
+    <!-- Récapitulatif commande -->
+    <div class="col-lg-5">
+        <div class="cart-summary" style="position:sticky;top:100px;">
+            <p style="font-size:0.65rem;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:16px;">Votre commande</p>
+            <% var total = 0; %>
+            <% cart.forEach(function(item) { %>
+            <% total += item.prix * item.qty; %>
+            <div class="d-flex justify-content-between mb-2" style="font-size:0.88rem;">
+                <span style="color:rgba(255,255,255,0.75);"><%= item.nom %> <span style="color:rgba(255,255,255,0.4);">× <%= item.qty %></span></span>
+                <span style="color:var(--color-white);"><%= Number(item.prix * item.qty).toLocaleString('fr-FR') %> FCFA</span>
+            </div>
+            <% }); %>
+            <hr style="border-color:rgba(255,255,255,0.1);margin:16px 0;">
+            <div class="d-flex justify-content-between align-items-end">
+                <span style="font-size:0.75rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.45);">Total</span>
+                <span class="cart-total-amount"><%= Number(total).toLocaleString('fr-FR') %> <span style="font-size:0.85rem;">FCFA</span></span>
             </div>
         </div>
     </div>
