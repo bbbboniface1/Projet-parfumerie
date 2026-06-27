@@ -47,6 +47,28 @@
                 <span class="cart-total-amount"><%= Number(totalGeneral).toLocaleString('fr-FR') %> <span style="font-size:0.85rem;">FCFA</span></span>
             </div>
 
+            <% var SEUIL_LIVRAISON = 25000; %>
+            <% if (totalGeneral < SEUIL_LIVRAISON) { %>
+            <% var reste = SEUIL_LIVRAISON - totalGeneral; %>
+            <% var pourcent = Math.round((totalGeneral / SEUIL_LIVRAISON) * 100); %>
+            <div class="mt-3 mb-3">
+                <p style="font-size:0.72rem;color:rgba(255,255,255,0.5);letter-spacing:0.5px;margin-bottom:6px;">
+                    Plus que <strong style="color:var(--color-gold);">
+                    <%= Number(reste).toLocaleString('fr-FR') %> FCFA</strong>
+                    pour la livraison gratuite
+                </p>
+                <div style="background:rgba(255,255,255,0.1);height:3px;border-radius:2px;">
+                    <div style="background:var(--color-gold);height:3px;border-radius:2px;width:<%= pourcent %>%;transition:width 0.3s;"></div>
+                </div>
+            </div>
+            <% } else { %>
+            <div class="mt-3 mb-3">
+                <p style="font-size:0.78rem;color:#27ae60;letter-spacing:0.5px;">
+                    <i class="fa fa-check me-1"></i> Livraison gratuite a Bamako incluse !
+                </p>
+            </div>
+            <% } %>
+
             <a href="/commande" class="btn-checkout mb-3">
                 <i class="fa fa-lock me-2" style="font-size:0.75rem;"></i> Passer la commande
             </a>

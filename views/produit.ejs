@@ -27,9 +27,11 @@
 
     <!-- Colonne détails -->
     <div class="col-lg-6">
-        <span class="product-category-label">
+        <a href="/?categorie=<%= produit.id_categorie %>"
+           class="product-category-label"
+           style="text-decoration:none;">
             <%= produit.id_categorie == 1 ? 'Collection Femme' : produit.id_categorie == 2 ? 'Collection Homme' : 'Collection Unisex' %>
-        </span>
+        </a>
 
         <h1 class="product-title"><%= produit.nom %></h1>
         <div class="product-separator"></div>

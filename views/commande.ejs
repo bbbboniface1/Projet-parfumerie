@@ -38,7 +38,11 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-floating mb-3">
-                        <input type="tel" name="telephone" class="form-control rounded-0" id="telephone" placeholder="Téléphone" required>
+                        <input type="tel" name="telephone" class="form-control rounded-0" id="telephone"
+                               placeholder="Ex: 90 73 28 94"
+                               pattern="[0-9\s\+\-]{8,15}"
+                               title="Numero de telephone (8 a 15 chiffres)"
+                               required>
                         <label for="telephone">Téléphone</label>
                     </div>
                 </div>
