@@ -14,6 +14,7 @@ const panierRouter = require('./routes/panier');
 const adminRouter = require('./routes/admin');
 const requireAdmin = require('./middleware/requireAdmin');
 const { notFound, serverError } = require('./middleware/errorHandler');
+const { verifyTransport } = require('./lib/mailer'); // CORRECTION
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -95,4 +96,5 @@ app.use(serverError);
 
 app.listen(port, '0.0.0.0', () => {
     logger.info(`Serveur lance sur le port ${port} [${process.env.NODE_ENV || 'development'}]`);
+    verifyTransport(); // CORRECTION — test SMTP au démarrage
 });

@@ -47,8 +47,12 @@ router.post('/ajouter/:id', async (req, res) => {
         if (!produit) return res.redirect('/');
         if (!req.session.cart) req.session.cart = [];
         const existing = req.session.cart.find(p => p.id === produit.id);
-        if (existing) { existing.qty++; } else {
-            req.session.cart.push({ id: produit.id, nom: produit.nom, prix: produit.prix, image: produit.image, qty: 1 });
+        // CORRECTION — lecture quantité choisie par l'utilisateur
+        const qtyDemandee = Math.max(1, parseInt(req.body.qty) || 1);
+        if (existing) {
+            existing.qty += qtyDemandee;
+        } else {
+            req.session.cart.push({ id: produit.id, nom: produit.nom, prix: produit.prix, image: produit.image, qty: qtyDemandee });
         }
         req.session.toast = { type: 'success', msg: `"${produit.nom}" ajouté au panier !` };
         // AJOUT ÉTAPE 8.1 : rediriger vers la page précédente
@@ -59,6 +63,27 @@ router.post('/ajouter/:id', async (req, res) => {
     } finally {
         connection.release();
     }
+});
+
+// CORRECTION — modifier la quantité d'un article dans le panier
+router.post('/modifier/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const qty = parseInt(req.body.qty);
+    if (!req.session.cart) return res.redirect('/panier');
+    if (isNaN(qty) || qty < 1) {
+        req.session.cart = req.session.cart.filter(i => i.id !== id);
+    } else {
+        const item = req.session.cart.find(i => i.id === id);
+        if (item) item.qty = qty;
+    }
+    res.redirect('/panier');
+});
+
+// CORRECTION — vider le panier entier
+router.post('/vider', (req, res) => {
+    req.session.cart = [];
+    req.session.toast = { type: 'info', msg: 'Votre panier a été vidé.' };
+    res.redirect('/panier');
 });
 
 // POST /panier/supprimer/:id

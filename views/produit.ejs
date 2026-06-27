@@ -58,10 +58,44 @@
         <div class="mt-4">
             <% if (produit.stock > 0) { %>
             <form action="/panier/ajouter/<%= produit.id %>" method="POST" class="mb-3">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="qty-selector d-flex align-items-center"
+                         style="border:1px solid var(--color-gold-light);display:inline-flex;">
+                        <button type="button"
+                                onclick="changeQty(-1)"
+                                style="width:40px;height:40px;background:none;border:none;
+                                       font-size:1.2rem;color:var(--color-gold);cursor:pointer;">−</button>
+                        <input type="number" name="qty" id="qtyInput" value="1" min="1" max="<%= produit.stock %>"
+                               style="width:50px;height:40px;border:none;text-align:center;
+                                      font-family:var(--font-serif);font-size:1rem;
+                                      background:transparent;outline:none;-moz-appearance:textfield;">
+                        <button type="button"
+                                onclick="changeQty(1)"
+                                style="width:40px;height:40px;background:none;border:none;
+                                       font-size:1.2rem;color:var(--color-gold);cursor:pointer;">+</button>
+                    </div>
+                    <small style="color:var(--color-text-muted);font-size:0.78rem;letter-spacing:1px;">
+                        <%= produit.stock %> disponible<%= produit.stock > 1 ? 's' : '' %>
+                    </small>
+                </div>
                 <button type="submit" class="btn-add-cart">
                     <i class="fa fa-bag-shopping me-2"></i> Ajouter au panier
                 </button>
             </form>
+
+            <script>
+            function changeQty(delta) {
+                const input = document.getElementById('qtyInput');
+                const max = parseInt(input.max) || 99;
+                const newVal = Math.min(max, Math.max(1, parseInt(input.value || 1) + delta));
+                input.value = newVal;
+            }
+            document.getElementById('qtyInput').addEventListener('input', function() {
+                const max = parseInt(this.max) || 99;
+                if (parseInt(this.value) < 1 || isNaN(parseInt(this.value))) this.value = 1;
+                if (parseInt(this.value) > max) this.value = max;
+            });
+            </script>
             <a href="<%= whatsappUrl %>"
                target="_blank"
                rel="noopener noreferrer"

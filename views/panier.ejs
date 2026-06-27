@@ -16,7 +16,19 @@
             <img src="/img/<%= item.image %>" alt="<%= item.nom %>" class="cart-item-img">
             <div class="flex-grow-1">
                 <p class="cart-item-name mb-1"><%= item.nom %></p>
-                <p style="font-size:0.8rem;color:var(--color-text-muted);letter-spacing:1px;margin:0;">Qté : <%= item.qty %></p>
+                <form action="/panier/modifier/<%= item.id %>" method="POST"
+                      class="d-flex align-items-center gap-1 mt-1"
+                      style="max-width:120px;">
+                    <button type="submit" name="qty" value="<%= item.qty - 1 %>"
+                            style="width:28px;height:28px;background:none;border:1px solid var(--color-gold-light);
+                                   color:var(--color-gold);font-size:1rem;cursor:pointer;line-height:1;">−</button>
+                    <span style="font-size:0.9rem;min-width:24px;text-align:center;font-family:var(--font-serif);">
+                        <%= item.qty %>
+                    </span>
+                    <button type="submit" name="qty" value="<%= item.qty + 1 %>"
+                            style="width:28px;height:28px;background:none;border:1px solid var(--color-gold-light);
+                                   color:var(--color-gold);font-size:1rem;cursor:pointer;line-height:1;">+</button>
+                </form>
             </div>
             <div class="text-end">
                 <p class="cart-item-price mb-2"><%= Number(sousTotal).toLocaleString('fr-FR') %> FCFA</p>
@@ -34,6 +46,15 @@
             <a href="/" style="font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--color-text-muted);text-decoration:none;">
                 ← Continuer mes achats
             </a>
+            <form action="/panier/vider" method="POST" class="mt-2"
+                  onsubmit="return confirm('Vider tout le panier ?')">
+                <button type="submit"
+                        style="background:none;border:none;font-size:0.78rem;
+                               letter-spacing:1.5px;text-transform:uppercase;
+                               color:#c0392b;cursor:pointer;padding:0;text-decoration:underline;">
+                    Vider le panier
+                </button>
+            </form>
         </div>
     </div>
 

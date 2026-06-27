@@ -142,7 +142,11 @@ router.post('/commande', [
     }
     const connection = await pool.getConnection();
     try {
-        const { nom, telephone, email, adresse, ville, codepostal, paiement } = req.body;
+        // CORRECTION — ajout notes de livraison
+        const { nom, telephone, email, adresse, ville, codepostal, paiement, notes } = req.body;
+        const adresseComplete = notes && notes.trim()
+            ? `${adresse}\nNotes: ${notes.trim()}`
+            : adresse;
         const cart = req.session.cart;
         if (!cart || !cart.length) return res.redirect('/panier');
         const total = cart.reduce((s, i) => s + i.prix * i.qty, 0);
@@ -162,7 +166,7 @@ router.post('/commande', [
         }
         const [result] = await connection.execute(
             'INSERT INTO commandes (nom, email, telephone, adresse, ville, codepostal, total, articles, paiement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [nom, email || null, telephone, adresse, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
+            [nom, email || null, telephone, adresseComplete, ville, codepostal, total, articlesJSON, paiement || 'A la livraison']
         );
         await connection.commit();
 
@@ -172,8 +176,14 @@ router.post('/commande', [
             commande: { id: result.insertId, articles: cart, total, paiement: paiement || 'A la livraison' }
         }).catch(err => req.log.warn(err, 'Email confirmation commande échoué'));
 
-        // AJOUT ÉTAPE 6 : stocker email pour page merci
+        // CORRECTION — sauvegarder récapitulatif pour page merci
         if (email) req.session.lastOrderEmail = email;
+        req.session.lastOrderSummary = {
+            id: result.insertId,
+            articles: cart,
+            total: total,
+            paiement: paiement || 'A la livraison'
+        };
         req.session.cart = null;
         res.redirect('/merci');
     } catch (err) {
@@ -187,9 +197,12 @@ router.post('/commande', [
 
 // GET /merci
 router.get('/merci', (req, res) => {
+    // CORRECTION — récapitulatif commande
     const lastEmail = req.session.lastOrderEmail || null;
+    const lastOrder = req.session.lastOrderSummary || null;
     if (req.session.lastOrderEmail) delete req.session.lastOrderEmail;
-    res.render('merci', { title: 'Merci', lastEmail });
+    if (req.session.lastOrderSummary) delete req.session.lastOrderSummary;
+    res.render('merci', { title: 'Merci', lastEmail, lastOrder });
 });
 
 // GET /mes-commandes — AJOUT ÉTAPE 6
