@@ -14,7 +14,7 @@ const panierRouter = require('./routes/panier');
 const adminRouter = require('./routes/admin');
 const requireAdmin = require('./middleware/requireAdmin');
 const { notFound, serverError } = require('./middleware/errorHandler');
-const { verifyTransport } = require('./lib/mailer'); // CORRECTION
+const { verifyTransport } = require('./lib/mailer'); // CORRECTION LOCAL
 
 const app = express();
 const port = process.env.PORT || 5000;
